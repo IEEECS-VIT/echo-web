@@ -1,8 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  output: 'standalone',
-}
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+    ],
+  },
+};
 
-module.exports = nextConfig 
+module.exports = {
+  images: {
+    domains: ["avatars.dicebear.com"],
+  },
+};
+
