@@ -22,7 +22,7 @@ export default function SignUpPage() {
   };
 
   return (
-      <div className="font-poppins flex h-screen bg-[#1a1a1a]">
+      <div className="flex h-screen bg-black font-sans">
         {/* Left Side Image */}
         <div className="hidden lg:block lg:w-1/2">
           <img
@@ -74,13 +74,7 @@ export default function SignUpPage() {
             <div className="mb-4">
               <label className="text-sm mb-1 block">Date of birth</label>
               <div className="flex gap-2">
-                <input
-                    type="text"
-                    placeholder="Month"
-                    value={form.dob.month}
-                    onChange={(e) => handleChange("month", e.target.value)}
-                    className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
-                />
+
                 <input
                     type="text"
                     placeholder="Date"
@@ -88,6 +82,15 @@ export default function SignUpPage() {
                     onChange={(e) => handleChange("day", e.target.value)}
                     className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
                 />
+
+                <input
+                    type="text"
+                    placeholder="Month"
+                    value={form.dob.month}
+                    onChange={(e) => handleChange("month", e.target.value)}
+                    className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
+                />
+
                 <input
                     type="text"
                     placeholder="Year"
