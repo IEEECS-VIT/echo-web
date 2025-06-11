@@ -2,124 +2,126 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
+import Cookies from "js-cookie";
 
 export default function Login() {
-  {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
-    return (
-        <div className="flex h-screen bg-black font-sans">
-          <div className="w-1/2 h-full">
-            <img
-                src="/gradient.png"
-                alt="Login Visual"
-                className="h-full w-full object-cover rounded-tr-[50px] rounded-br-[50px]"
-            />
-          </div>
+  const handleLogin = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: username,
+      password: password,
+    });
 
+    if (error) {
+      console.error("Login error:", error.message);
+      alert("Login failed!");
+      return;
+    }
 
-          <div className="w-1/2 flex justify-center items-center">
-            <div className="w-[70%] max-w-md">
+    Cookies.set("access_token", data.session.access_token);
+    alert("Login successful!");
+  };
 
-              {/* Logo */}
-              <div className="w-full mb-[20px] lg:mb-[40px]">
-                <div className="relative inline-block">
-                  <div id="echo-text"
-                       className="font-jersey lg:text-[64px] md:text-[48px] text-[40px] font-normal text-white">
-                    echo
-                  </div>
-                  <svg width="13" height="34" className="absolute left-[116px] top-[34px]" fill="none"
-                       xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 2C14.2659 13.7159 13.7311 20.2841 2 32" stroke="white" strokeWidth="4"/>
-                  </svg>
-                  <svg width="16" height="46" className="absolute left-[120px] top-[28px]" fill="none"
-                       xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 2C18.3545 18.4022 17.6415 27.5977 2 44" stroke="white" strokeWidth="4"/>
-                  </svg>
+  return (
+      <div className="flex h-screen bg-black font-sans">
+        <div className="w-1/2 h-full">
+          <img
+              src="/gradient.png"
+              alt="Login Visual"
+              className="h-full w-full object-cover rounded-tr-[50px] rounded-br-[50px]"
+          />
+        </div>
+
+        <div className="w-1/2 flex justify-center items-center">
+          <div className="w-[70%] max-w-md">
+            <div className="w-full mb-[20px] lg:mb-[40px]">
+              <div className="relative inline-block">
+                <div
+                    id="echo-text"
+                    className="font-jersey lg:text-[64px] md:text-[48px] text-[40px] font-normal text-white"
+                >
+                  echo
                 </div>
+                <svg width="13" height="34" className="absolute left-[116px] top-[34px]" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 2C14.2659 13.7159 13.7311 20.2841 2 32" stroke="white" strokeWidth="4" />
+                </svg>
+                <svg width="16" height="46" className="absolute left-[120px] top-[28px]" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 2C18.3545 18.4022 17.6415 27.5977 2 44" stroke="white" strokeWidth="4" />
+                </svg>
               </div>
-
-              {/* Title */}
-              <h1 className="font-poppins text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 md:mb-5 text-center">
-                Login
-              </h1>
-
-              {/* Sign up link */}
-              <div
-                  className="font-poppins text-base md:text-lg lg:text-xl font-normal mb-6 md:mb-8 lg:mb-10 text-center">
-                <span className="text-white">New Here? </span>
-                <Link href="/signup" className="text-[#FFC341] underline cursor-pointer">
-                  Sign Up
-                </Link>
-              </div>
-
-              {/* Username */}
-              <div className="mb-4">
-                <label className="text-white text-sm font-light">Username</label>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
-                />
-              </div>
-
-              {/* Password */}
-              <div className="mb-4">
-                <label className="text-white text-sm font-light">Password</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
-                />
-              </div>
-
-              {/* Remember me */}
-              <div className="flex items-center mb-6">
-                <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="form-checkbox text-yellow-400"
-                />
-                <label className="ml-2 text-sm text-white">Remember Me</label>
-              </div>
-
-              {/* Divider */}
-              <div className="flex items-center justify-center mb-6 md:mb-4 relative">
-                <div className="flex-grow h-px bg-white opacity-40"/>
-                <div className="font-poppins text-sm md:text-base font-normal text-white mx-3.5 md:mx-4">
-                  or Sign In With
-                </div>
-                <div className="flex-grow h-px bg-white opacity-40"/>
-              </div>
-
-              {/* Sign In With Google*/}
-              <button
-                  type="button"
-                  className="flex items-center justify-center w-full py-3 mb-2 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition"
-              >
-                <img
-                    src="/Google.svg"
-                    alt="Google"
-                    className="w-6 h-6 mr-3"
-                />
-                <span className="text-base font-medium text-[#3c4043]">Sign up with Google</span>
-              </button>
-
-
-              {/* Sign In Button */}
-              <button
-                  className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 mt-6">
-                Sign In
-              </button>
-
             </div>
+
+            <h1 className="font-poppins text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 md:mb-5 text-center">
+              Login
+            </h1>
+
+            <div className="font-poppins text-base md:text-lg lg:text-xl font-normal mb-6 md:mb-8 lg:mb-10 text-center">
+              <span className="text-white">New Here? </span>
+              <Link href="/signup" className="text-[#FFC341] underline cursor-pointer">
+                Sign Up
+              </Link>
+            </div>
+
+            <div className="mb-4">
+              <label className="text-white text-sm font-light">Username</label>
+              <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="text-white text-sm font-light">Password</label>
+              <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
+              />
+            </div>
+
+            <div className="flex items-center mb-6">
+              <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="form-checkbox text-yellow-400"
+              />
+              <label className="ml-2 text-sm text-white">Remember Me</label>
+            </div>
+
+            <div className="flex items-center justify-center mb-6 md:mb-4 relative">
+              <div className="flex-grow h-px bg-white opacity-40" />
+              <div className="font-poppins text-sm md:text-base font-normal text-white mx-3.5 md:mx-4">
+                or Sign In With
+              </div>
+              <div className="flex-grow h-px bg-white opacity-40" />
+            </div>
+
+            <button
+                type="button"
+                className="flex items-center justify-center w-full py-3 mb-2 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition"
+            >
+              <img src="/Google.svg" alt="Google" className="w-6 h-6 mr-3" />
+              <span className="text-base font-medium text-[#3c4043]">Sign up with Google</span>
+            </button>
+
+            <button
+                onClick={handleLogin}
+                className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 mt-6"
+            >
+              Sign In
+            </button>
           </div>
         </div>
-    );
-  }
+      </div>
+  );
 }
