@@ -32,6 +32,7 @@ export default function SignUpPage() {
       password,
       options: {
         data: { username },
+        emailRedirectTo: "http://localhost:3000/login",
       },
     });
 
