@@ -98,7 +98,14 @@ export default function Login() {
               <label className="ml-2 text-sm text-white">Remember Me</label>
             </div>
 
-            <div className="flex items-center justify-center mb-6 md:mb-4 relative">
+            <button
+                onClick={handleLogin}
+                className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 mt-2"
+            >
+              Sign In
+            </button>
+
+            <div className="flex items-center justify-center mt-4 mb-6 md:mb-4 relative">
               <div className="flex-grow h-px bg-white opacity-40" />
               <div className="font-poppins text-sm md:text-base font-normal text-white mx-3.5 md:mx-4">
                 or Sign In With
@@ -114,12 +121,7 @@ export default function Login() {
               <span className="text-base font-medium text-[#3c4043]">Sign up with Google</span>
             </button>
 
-            <button
-                onClick={handleLogin}
-                className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 mt-6"
-            >
-              Sign In
-            </button>
+
           </div>
         </div>
       </div>
