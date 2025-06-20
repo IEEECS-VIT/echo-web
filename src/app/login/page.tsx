@@ -2,29 +2,36 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
 import Cookies from "js-cookie";
-
+import { useRouter } from "next/navigation";
+const router = useRouter();
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: username,
-      password: password,
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: username,
+        password: password,
+      }),
     });
 
-    if (error) {
-      console.error("Login error:", error.message);
-      alert("Login failed!");
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Login failed!");
       return;
     }
 
-    Cookies.set("access_token", data.session.access_token);
+
     alert("Login successful!");
+    router.push("/profile");
   };
+
 
   return (
       <div className="flex h-screen bg-black font-sans">
