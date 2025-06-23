@@ -1,17 +1,49 @@
 'use client';
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState } from 'react';
+import Link from 'next/link';
+import Cookies from 'js-cookie';
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [message, setMessage] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  const handleLogin = () => {
-    console.log("Dummy login:", { email, password, rememberMe });
-    alert("This is just a visual preview. No login logic runs!");
-  };
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setMessage('');
+    setSuccess(false);
+
+    const res = await fetch(
+        'https://remwzcalhvoaubuhuzan.supabase.co/auth/v1/token?grant_type=password',
+        {
+          method: 'POST',
+          headers: {
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        }
+    );
+
+    const data = await res.json();
+
+    if (data.access_token) {
+      Cookies.set('supabaseToken', data.access_token, {
+        expires: 7,
+        secure: true,
+        sameSite: 'strict',
+      });
+      setSuccess(true);
+      setMessage('Login successful!');
+
+    } else {
+      setSuccess(false);
+      setMessage(data.error_description || data.error || 'Login failed. Please try again.');
+    }
+  }
 
   return (
       <div className="flex h-screen bg-black font-sans">
@@ -56,46 +88,55 @@ export default function Login() {
               </Link>
             </div>
 
-            {/* Email */}
-            <div className="mb-4">
-              <label className="text-white text-sm font-light">Email</label>
-              <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
-              />
-            </div>
+            <form onSubmit={handleLogin}>
+              {/* Email */}
+              <div className="mb-4">
+                <label className="text-white text-sm font-light">Email</label>
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
+                    required
+                />
+              </div>
 
-            {/* Password */}
-            <div className="mb-4">
-              <label className="text-white text-sm font-light">Password</label>
-              <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
-              />
-            </div>
+              {/* Password */}
+              <div className="mb-4">
+                <label className="text-white text-sm font-light">Password</label>
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
+                    required
+                />
+              </div>
 
-            {/* Remember me */}
-            <div className="flex items-center mb-6">
-              <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="form-checkbox text-yellow-400"
-              />
-              <label className="ml-2 text-sm text-white">Remember Me</label>
-            </div>
+              {/* Remember me */}
+              <div className="flex items-center mb-6">
+                <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="form-checkbox text-yellow-400"
+                />
+                <label className="ml-2 text-sm text-white">Remember Me</label>
+              </div>
 
-            {/* Sign In Button */}
-            <button
-                onClick={handleLogin}
-                className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 mt-2"
-            >
-              Sign In
-            </button>
+              {/* Sign In Button */}
+              <button
+                  type="submit"
+                  className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 mt-2"
+              >
+                Sign In
+              </button>
+            </form>
+
+            {/* Message */}
+            {message && (
+                <div style={{ color: success ? 'green' : 'red', marginTop: 10 }}>{message}</div>
+            )}
 
             {/* Divider */}
             <div className="flex items-center justify-center mt-4 mb-6 md:mb-4 relative">

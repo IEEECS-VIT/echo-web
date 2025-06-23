@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const [form, setForm] = useState({
@@ -10,6 +11,10 @@ export default function SignUpPage() {
     password: "",
     dob: { day: "", month: "", year: "" },
   });
+  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleChange = (field: string, value: string) => {
     if (["day", "month", "year"].includes(field)) {
@@ -22,9 +27,40 @@ export default function SignUpPage() {
     }
   };
 
-  const handleRegister = () => {
-    console.log("Dummy signup form submitted:", form);
-    alert("This is a visual preview. No signup logic runs!");
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage("");
+    setSuccess(false);
+    setLoading(true);
+
+
+    const res = await fetch(
+        "https://remwzcalhvoaubuhuzan.supabase.co/auth/v1/signup",
+        {
+          method: "POST",
+          headers: {
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: form.email,
+            password: form.password,
+          }),
+        }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setSuccess(false);
+      setMessage(data.error_description || data.error || "Registration failed. Please try again.");
+    } else {
+      setSuccess(true);
+      setMessage("Registration successful! Please check your email to confirm your account.");
+
+      setTimeout(() => router.push("/login"), 2000);
+    }
+    setLoading(false);
   };
 
   return (
@@ -41,79 +77,93 @@ export default function SignUpPage() {
           <div className="w-full max-w-md text-white">
             <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
 
-            <div className="mb-4">
-              <label className="text-sm">Email</label>
-              <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="text-sm">Display Name</label>
-              <input
-                  type="text"
-                  value={form.displayName}
-                  onChange={(e) => handleChange("displayName", e.target.value)}
-                  className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="text-sm">Username</label>
-              <input
-                  type="text"
-                  value={form.username}
-                  onChange={(e) => handleChange("username", e.target.value)}
-                  className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="text-sm mb-1 block">Date of birth</label>
-              <div className="flex gap-2">
+            <form onSubmit={handleRegister}>
+              <div className="mb-4">
+                <label className="text-sm">Email</label>
                 <input
-                    type="text"
-                    placeholder="Date"
-                    value={form.dob.day}
-                    onChange={(e) => handleChange("day", e.target.value)}
-                    className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
-                />
-                <input
-                    type="text"
-                    placeholder="Month"
-                    value={form.dob.month}
-                    onChange={(e) => handleChange("month", e.target.value)}
-                    className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
-                />
-                <input
-                    type="text"
-                    placeholder="Year"
-                    value={form.dob.year}
-                    onChange={(e) => handleChange("year", e.target.value)}
-                    className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
+                    required
                 />
               </div>
-            </div>
 
-            <div className="mb-6">
-              <label className="text-sm">Password</label>
-              <input
-                  type="password"
-                  value={form.password}
-                  onChange={(e) => handleChange("password", e.target.value)}
-                  className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
-              />
-            </div>
+              <div className="mb-4">
+                <label className="text-sm">Display Name</label>
+                <input
+                    type="text"
+                    value={form.displayName}
+                    onChange={(e) => handleChange("displayName", e.target.value)}
+                    className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
+                />
+              </div>
 
-            <button
-                onClick={handleRegister}
-                className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500"
-            >
-              Register
-            </button>
+              <div className="mb-4">
+                <label className="text-sm">Username</label>
+                <input
+                    type="text"
+                    value={form.username}
+                    onChange={(e) => handleChange("username", e.target.value)}
+                    className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="text-sm mb-1 block">Date of birth</label>
+                <div className="flex gap-2">
+                  <input
+                      type="text"
+                      placeholder="Date"
+                      value={form.dob.day}
+                      onChange={(e) => handleChange("day", e.target.value)}
+                      className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
+                  />
+                  <input
+                      type="text"
+                      placeholder="Month"
+                      value={form.dob.month}
+                      onChange={(e) => handleChange("month", e.target.value)}
+                      className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
+                  />
+                  <input
+                      type="text"
+                      placeholder="Year"
+                      value={form.dob.year}
+                      onChange={(e) => handleChange("year", e.target.value)}
+                      className="w-1/3 px-2 py-2 bg-transparent border border-white rounded-md text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="text-sm">Password</label>
+                <input
+                    type="password"
+                    value={form.password}
+                    onChange={(e) => handleChange("password", e.target.value)}
+                    className="w-full px-4 py-2 mt-1 bg-transparent border border-white rounded-md focus:outline-none"
+                    required
+                />
+              </div>
+
+              <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 text-lg font-semibold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 disabled:opacity-60"
+              >
+                {loading ? "Registering..." : "Register"}
+              </button>
+            </form>
+
+            {message && (
+                <div
+                    style={{ color: success ? "green" : "red", marginTop: 10 }}
+                    className="text-center"
+                >
+                  {message}
+                </div>
+            )}
 
             <div className="text-sm text-center mt-4">
               <a href="/login" className="text-yellow-400 hover:underline">
