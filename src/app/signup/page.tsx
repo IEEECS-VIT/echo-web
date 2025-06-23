@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import Cookies from "js-cookie";
 
 export default function SignUpPage() {
   const [form, setForm] = useState({
@@ -24,30 +22,9 @@ export default function SignUpPage() {
     }
   };
 
-  const handleRegister = async () => {
-    const { email, password, username } = form;
-
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username },
-        emailRedirectTo: "http://localhost:3000/login",
-      },
-    });
-
-    if (error) {
-      console.error("Signup error:", error.message);
-      alert("Signup failed!");
-      return;
-    }
-
-    if (data.session) {
-      Cookies.set("access_token", data.session.access_token);
-      alert("Signup successful!");
-    } else {
-      alert("Check your email for confirmation!");
-    }
+  const handleRegister = () => {
+    console.log("Dummy signup form submitted:", form);
+    alert("This is a visual preview. No signup logic runs!");
   };
 
   return (
@@ -139,7 +116,9 @@ export default function SignUpPage() {
             </button>
 
             <div className="text-sm text-center mt-4">
-              <a href="/login" className="text-yellow-400 hover:underline">Already have an account?</a>
+              <a href="/login" className="text-yellow-400 hover:underline">
+                Already have an account?
+              </a>
             </div>
           </div>
         </div>
