@@ -9,6 +9,9 @@ function SidebarItem({ icon, label }: { icon: React.ReactNode; label: string }) 
 }
 
 export default function ProfilePage() {
+    const numPolygons = 10;
+    const maxOpacity = 0.6;
+    const minOpacity = 0.1;
     return (
         <div className="flex min-h-screen bg-black text-white relative font-poppins">
             {/* Sidebar */}
@@ -111,7 +114,6 @@ export default function ProfilePage() {
                             className="absolute -top-[100px] -left-[30px] z-20"
                             style={{ width: 220, height: 220 }}
                         >
-                            {/* Avatar Image Clipped to Hexagon */}
                             <img
                                 src="/avatar.png"
                                 alt="Avatar"
@@ -156,10 +158,12 @@ export default function ProfilePage() {
                                         />
                                     </clipPath>
                                 </defs>
-                                {/* Wavy hexagons are rendered here */}
-                                {Array.from({ length: 10 }).map((_, i) => {
+
+                                {Array.from({ length: 13 }).map((_, i) => {
+                                    const opacity = maxOpacity - (maxOpacity - minOpacity) * (i / (numPolygons - 1));
                                     const points = [];
                                     const baseRadius = 100 + i * 2;
+                                    const sides=5;
                                     for (let j = 0; j < 6; j++) {
                                         const angle = (Math.PI / 3) * j - Math.PI / 2;
                                         const r = baseRadius + Math.sin(j * 2 + i) * 8;
@@ -174,7 +178,7 @@ export default function ProfilePage() {
                                             fill="none"
                                             stroke="url(#wavyHexGradient)"
                                             strokeWidth={i === 11 ? 3 : 1}
-                                            opacity={0.07 + i * 0.07}
+                                            opacity={opacity}
                                             transform={`rotate(${i * 23} 110 110)`}
                                         />
                                     );
