@@ -1,0 +1,43 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  background: #111; /* Set a dark background for the whole page */
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+}
+
+.mainContent {
+  flex: 1;
+  background: #111; /* Match sidebar background */
+  padding: 48px 64px;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  background: #313338;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.mainContent {
+  flex: 1;
+  background: #313338;
+  padding: 60px 40px 80px 40px;
+  color: #f2f3f5;
+  min-height: 100vh;
+}
+.container {
+  display: flex;
+  min-height: 100vh;
+  background: #000000;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.mainContent {
+  flex: 1;
+  background: #000000;
+  padding: 60px 40px 80px 40px;
+  color: #ffffff;
+  min-height: 100vh;
+}

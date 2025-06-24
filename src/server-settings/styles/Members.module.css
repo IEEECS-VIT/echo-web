@@ -1,0 +1,287 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 0 0 0;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 32px;
+  color: #ffffff;
+}
+
+.tableContainer {
+  background: #2b2d31;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.membersTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.membersTable thead th {
+  background: #404249;
+  color: #b5bac1;
+  padding: 16px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #1e1f22;
+}
+
+.usernameHeader {
+  width: 35%;
+}
+
+.roleHeader {
+  width: 25%;
+}
+
+.dateHeader {
+  width: 20%;
+}
+
+.actionsHeader {
+  width: 20%;
+}
+
+.memberRow {
+  border-bottom: 1px solid #404249;
+  transition: background-color 0.2s ease;
+}
+
+.memberRow:hover {
+  background-color: #36393f;
+}
+
+.memberRow:last-child {
+  border-bottom: none;
+}
+
+.memberRow td {
+  padding: 16px;
+  vertical-align: middle;
+}
+
+.usernameCell {
+  width: 35%;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.username {
+  font-weight: 500;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.rolesCell {
+  width: 25%;
+}
+
+.rolesList {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.roleBadge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+
+.joinDateCell {
+  width: 20%;
+  color: #b5bac1;
+  font-size: 14px;
+}
+
+.actionsCell {
+  width: 20%;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.roleSelect {
+  background: #3a3a3a;
+  color: #fff;
+  border: 1px solid #72767d;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.roleSelect:hover {
+  background: #404040;
+  border-color: #8a8f96;
+}
+
+.roleSelect:focus {
+  border-color: #7289da;
+  outline: none;
+}
+
+.kickButton {
+  background: #ed4245;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.kickButton:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+}
+
+.addMemberSection {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 20px;
+}
+
+.addMemberButton {
+  background: #5865f2;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(88, 101, 242, 0.12);
+}
+
+.addMemberButton:hover {
+  background: linear-gradient(90deg, #7289da, #5865f2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.25);
+}
+
+.addMemberForm {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.addMemberInput {
+  background: #3a3a3a;
+  color: #fff;
+  border: 1px solid #72767d;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.addMemberInput:focus {
+  border-color: #7289da;
+  outline: none;
+  background: #404040;
+}
+
+.confirmAddButton {
+  background: #43b581;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmAddButton:hover {
+  background: #3ca374;
+  transform: translateY(-1px);
+}
+
+.cancelButton {
+  background: #4f545c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: #5d6269;
+}
+.addMemberButton {
+  background: #e74c3c;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  cursor: pointer;
+  transition:
+    background 0.8s cubic-bezier(.4,0,.2,1),
+    color 0.8s cubic-bezier(.4,0,.2,1),
+    transform 0.3s cubic-bezier(.4,0,.2,1),
+    box-shadow 0.3s cubic-bezier(.4,0,.2,1);
+  text-transform: none;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.12);
+}
+
+.addMemberButton:hover {
+  background: linear-gradient(90deg, #ff4e50, #e74c3c, #f85032);
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(231, 76, 60, 0.25);
+}
+
+.addMemberButton:active {
+  background: linear-gradient(90deg, #e74c3c, #ff4e50, #f85032);
+  transform: translateY(0) scale(1.01);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.18);
+}

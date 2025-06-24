@@ -1,0 +1,338 @@
+.roleContainer {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 0 0 0;
+    font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #fff;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    color: #fff;
+}
+
+.rolesList {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.roleItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #23272a;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: border 0.2s, background 0.2s;
+}
+
+.roleItem:hover {
+    border-color: #5865f2;
+    background: #2b2d31;
+}
+
+.roleColorBadge {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #23272a;
+    display: inline-block;
+}
+
+.roleName {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.addRoleSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.input {
+    background: #3a3a3a;
+    color: #fff;
+    border: 1px solid #72767d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border 0.2s;
+}
+
+.input:focus {
+    border-color: #7289da;
+    outline: none;
+}
+
+.colorInput {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.addButton {
+    background: #5865f2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.addButton:hover {
+    background: linear-gradient(90deg, #7289da, #5865f2);
+}
+
+.editRoleSection {
+    margin-top: 36px;
+    background: #23272a;
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.label {
+    display: block;
+    color: #b5bac1;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 18px 0 8px 0;
+}
+
+.permissionSection {
+    margin-bottom: 18px;
+}
+
+.editActions {
+    display: flex;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.saveButton {
+    background: #43b581;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.saveButton:hover {
+    background: linear-gradient(90deg, #43e97b, #38f9d7);
+}
+
+.deleteButton {
+    background: #ed4245;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.deleteButton:hover {
+    background: linear-gradient(90deg, #ff4e50, #ed4245);
+}
+.roleContainer {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 0 0 0;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #fff;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: #fff;
+}
+
+.rolesList {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.roleItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #23272a;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+}
+
+.roleItem:hover {
+  border-color: #5865f2;
+  background: #2b2d31;
+}
+
+.roleColorBadge {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #23272a;
+  display: inline-block;
+}
+
+.roleName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.addRoleSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.input {
+  background: #3a3a3a;
+  color: #fff;
+  border: 1px solid #72767d;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  border-color: #7289da;
+  outline: none;
+  background: #404040;
+  transform: scale(1.01);
+}
+
+.input:hover {
+  background: #404040;
+  border-color: #8a8f96;
+}
+
+.colorInput {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.addButton {
+  background: #e74c3c;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  cursor: pointer;
+  transition: 
+    background 0.8s cubic-bezier(.4,0,.2,1),
+    color 0.8s cubic-bezier(.4,0,.2,1),
+    transform 0.3s cubic-bezier(.4,0,.2,1),
+    box-shadow 0.3s cubic-bezier(.4,0,.2,1);
+  text-transform: none;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.12);
+}
+
+.addButton:hover {
+  background: linear-gradient(90deg, #ff4e50, #e74c3c, #f85032);
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(231, 76, 60, 0.25);
+}
+
+.addButton:active {
+  background: linear-gradient(90deg, #e74c3c, #ff4e50, #f85032);
+  transform: translateY(0) scale(1.01);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.18);
+}
+
+.editRoleSection {
+  margin-top: 36px;
+  background: #23272a;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+
+.label {
+  display: block;
+  color: #b5bac1;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 18px 0 8px 0;
+}
+
+.permissionSection {
+  margin-bottom: 18px;
+}
+
+.editActions {
+  display: flex;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.saveButton {
+  background: #43b581;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveButton:hover {
+  background: linear-gradient(90deg, #43e97b, #38f9d7);
+}
+
+.deleteButton {
+  background: #ed4245;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.deleteButton:hover {
+  background: linear-gradient(90deg, #ff4e50, #ed4245);
+}
