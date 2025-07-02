@@ -1,5 +1,5 @@
 'use client';
-
+import { register } from "../api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -34,31 +34,18 @@ export default function SignUpPage() {
     setLoading(true);
 
 
-    const res = await fetch(
-        "https://remwzcalhvoaubuhuzan.supabase.co/auth/v1/signup",
-        {
-          method: "POST",
-          headers: {
-            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: form.email,
-            password: form.password,
-          }),
-        }
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setSuccess(false);
-      setMessage(data.error_description || data.error || "Registration failed. Please try again.");
-    } else {
+    try {
+      const res = await register(form.email, form.username, form.password);
       setSuccess(true);
-      setMessage("Registration successful! Please check your email to confirm your account.");
-
+      setMessage(res.message || "Registration successful!");
       setTimeout(() => router.push("/login"), 2000);
+    } catch (error: any) {
+      setSuccess(false);
+      setMessage(
+          error?.response?.data?.message ||
+          error?.message ||
+          "Registration failed. Please try again."
+      );
     }
     setLoading(false);
   };

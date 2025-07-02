@@ -1,11 +1,10 @@
 'use client';
-
+import { login } from "../api";
 import { useState } from 'react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState('');
@@ -16,32 +15,17 @@ export default function Login() {
     setMessage('');
     setSuccess(false);
 
-    const res = await fetch(
-        'https://remwzcalhvoaubuhuzan.supabase.co/auth/v1/token?grant_type=password',
-        {
-          method: 'POST',
-          headers: {
-            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        }
-    );
-
-    const data = await res.json();
-
-    if (data.access_token) {
-      Cookies.set('supabaseToken', data.access_token, {
-        expires: 7,
-        secure: true,
-        sameSite: 'strict',
-      });
+    try {
+      const data = await login(identifier, password);
       setSuccess(true);
-      setMessage('Login successful!');
-
-    } else {
+      setMessage(data.message || 'Login successful!');
+    } catch (error: any) {
       setSuccess(false);
-      setMessage(data.error_description || data.error || 'Login failed. Please try again.');
+      setMessage(
+          error?.response?.data?.message ||
+          error?.message ||
+          'Login failed. Please try again.'
+      );
     }
   }
 
@@ -91,11 +75,12 @@ export default function Login() {
             <form onSubmit={handleLogin}>
               {/* Email */}
               <div className="mb-4">
-                <label className="text-white text-sm font-light">Email</label>
+                <label className="text-white text-sm font-light">Email or Username</label>
                 <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="text"
+                    placeholder="Email or Username"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
                     required
                 />
