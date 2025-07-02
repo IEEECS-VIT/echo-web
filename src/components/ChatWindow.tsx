@@ -78,12 +78,8 @@ export default function ChatWindow() {
 
   return (
     <div
-      className="flex flex-col flex-1 text-white select-none"
-      style={{
-        backgroundImage: "url('/image.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="flex flex-1 h-screen flex-col bg-cover bg-center text-white select-none"
+      style={{ backgroundImage: "url('/image.png')" }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
