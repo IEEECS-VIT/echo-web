@@ -17,7 +17,6 @@ export default function InvitePeople() {
   return (
     <div className="max-w-lg mx-auto p-8 text-white">
       <h1 className="text-2xl font-bold mb-8">Invite People</h1>
-      {/* Invite Link */}
       <div className="mb-7">
         <label className="block text-sm text-[#b5bac1] mb-2 font-semibold">Invite Link</label>
         <div className="flex items-center gap-3">
@@ -43,7 +42,6 @@ export default function InvitePeople() {
           </button>
         </div>
       </div>
-      {/* Settings Grid */}
       <div className="flex gap-6 mb-8 flex-col md:flex-row">
         <div className="flex-1 min-w-[180px]">
           <label className="block text-sm text-[#b5bac1] mb-2 font-semibold">Expires after</label>
@@ -105,7 +103,6 @@ export default function InvitePeople() {
           </div>
         </div>
       </div>
-      {/* Button Container */}
       <div className="flex justify-end">
         <button
           className="bg-gradient-to-r from-[#ffb347] to-[#ffcc33] text-[#23272a] font-bold rounded px-6 py-2 shadow transition-all duration-200
