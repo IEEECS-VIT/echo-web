@@ -4,11 +4,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaHashtag, FaCog } from "react-icons/fa";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import type { EmojiClickData } from "emoji-picker-react";
+import { useRouter } from "next/navigation";
 
 const TENOR_API_KEY = process.env.NEXT_PUBLIC_TENOR_API_KEY!;
 
 
 const ServersPage: React.FC = () => {
+  const router = useRouter();
   const [activeChannel, setActiveChannel] = useState("general");
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
@@ -170,6 +172,12 @@ const ServersPage: React.FC = () => {
             alt="server"
           />
           <h2 className="text-xl font-bold">Hackbattle</h2>
+           <button
+              className="ml-2 p-2 rounded-full hover:bg-[#23272a] transition"
+              title="Server Settings"
+              onClick={() => router.push("/server-settings")}>
+              <FaCog className="w-5 h-5 text-[#b5bac1] hover:text-white" />
+          </button>
         </div>
         {[
           { title: "General", channels: ["general", "welcome"] },
