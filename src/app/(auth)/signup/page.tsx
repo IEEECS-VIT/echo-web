@@ -1,5 +1,5 @@
 'use client';
-import { register } from "../api";
+import { register } from "../../api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 

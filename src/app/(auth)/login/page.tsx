@@ -1,5 +1,5 @@
 'use client';
-import { login } from "../api";
+import { login } from "../../api";
 import { useState } from 'react';
 import Link from 'next/link';
 

@@ -5,44 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2dee1387-15a0-4c2f-a8be-99b4fbe97d24" name="Changes" comment="Login and signup">
-      <change beforePath="$PROJECT_DIR$/echo-web/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/next.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/postcss.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/Line_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/Line_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/User_profil.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/echo-logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/gradient-background.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/hackbattle.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/image.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/image_6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/image_7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/image_9.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/public/sidebar-bg.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/app/globals.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/app/layout.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/app/login/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/app/messages/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/app/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/app/servers/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/app/signup/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/chat/page.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/components/ChannelList.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/components/ChatList.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/components/ChatPage.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/components/ChatWindow.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/components/MessageBubble.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/components/MessageInput.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/src/components/Sidebar.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/tailwind.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/echo-web/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/next-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next-env.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(app)/layout.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(auth)/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(app)/dashboard/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(auth)/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/messages/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(app)/messages/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/profile/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(app)/profile/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/servers/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(app)/servers/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/signup/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(auth)/signup/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,10 +71,11 @@
       <recent name="C:\Users\MEHELI GHOSH\WebstormProjects\echo-web\public" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\MEHELI GHOSH\WebstormProjects\echo-web\src\app\(app)" />
+      <recent name="C:\Users\MEHELI GHOSH\WebstormProjects\echo-web\src\app\auth" />
       <recent name="C:\Users\MEHELI GHOSH\WebstormProjects\echo-web\src\app" />
       <recent name="C:\Users\MEHELI GHOSH\WebstormProjects\echo-web\src\app\" />
       <recent name="C:\Users\MEHELI GHOSH\WebstormProjects\echo-web/src/app/" />
-      <recent name="C:\Users\MEHELI GHOSH\WebstormProjects\echo-web" />
     </key>
   </component>
   <component name="SharedIndexes">

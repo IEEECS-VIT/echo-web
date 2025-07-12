@@ -1,4 +1,4 @@
-
+/*
 function SidebarItem({ icon, label }: { icon: React.ReactNode; label: string }) {
     return (
         <div className="flex items-center gap-4 text-white hover:text-[#FFC341] cursor-pointer transition-colors duration-200">
@@ -7,14 +7,15 @@ function SidebarItem({ icon, label }: { icon: React.ReactNode; label: string }) 
         </div>
     );
 }
-
+*/
 export default function ProfilePage() {
     const numPolygons = 10;
     const maxOpacity = 0.6;
     const minOpacity = 0.1;
     return (
         <div className="flex min-h-screen bg-black text-white relative font-poppins">
-            {/* Sidebar */}
+             {/* Sidebar */}
+            {/*
             <aside className="w-64 bg-[url('/sidebar-gradient.png')] bg-cover bg-no-repeat p-6 flex flex-col items-start relative shadow-xl">
                 <nav className="space-y-6 text-sm text-white/90 mt-6">
                     <nav className="flex flex-col gap-8 mt-10">
@@ -93,6 +94,7 @@ export default function ProfilePage() {
                 </div>
 
             </aside>
+            */}
 
             {/* Main Content */}
             <main className="flex-1 p-10 flex flex-col gap-6 relative">
