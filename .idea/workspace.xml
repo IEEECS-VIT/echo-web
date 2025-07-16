@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2dee1387-15a0-4c2f-a8be-99b4fbe97d24" name="Changes" comment="Removed sidebar and only kept it on pages as required by figma doc.">
+      <change afterPath="$PROJECT_DIR$/src/app/(auth)/forgot-password/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/(auth)/reset-password/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(auth)/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(auth)/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +50,7 @@
     &quot;Node.js.supabaseClient.ts.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;login-signup-restore&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;cleanup-login-signup&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/MEHELI GHOSH/WebstormProjects/echo-web/public&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -106,6 +111,8 @@
       <workItem from="1752078324858" duration="1683000" />
       <workItem from="1752329753324" duration="621000" />
       <workItem from="1752425652480" duration="1552000" />
+      <workItem from="1752598096132" duration="7712000" />
+      <workItem from="1752670639445" duration="3328000" />
     </task>
     <task id="LOCAL-00001" summary="I have fixed the stuff. I saw VITE on the resource material that was sent to us so i thought we needed to use it. Please reveiw it once.">
       <option name="closed" value="true" />
@@ -272,6 +279,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="I have fixed the stuff. I saw VITE on the resource material that was sent to us so i thought we needed to use it. Please reveiw it once." />

@@ -96,6 +96,11 @@ export default function Login() {
                     className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
                     required
                 />
+                <div className="flex justify-end mt-1">
+                  <Link href="/forgot-password" className="text-sm text-[#FFC341] hover:underline">
+                    Forgot Password?
+                  </Link>
+                </div>
               </div>
 
               {/* Remember me */}

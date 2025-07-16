@@ -24,3 +24,21 @@ export const login = async (
     });
     return response.data;
 };
+export async function forgotPassword(email: string) {
+    const response = await axios.post(`${API_BASE_URL}/auth/forgot-password`, {
+        email,
+    });
+    return response.data;
+}
+export async function resetPassword(newPassword: string, token: string) {
+    const response = await axios.post(
+        `${API_BASE_URL}/auth/reset-password`,
+        { new_password: newPassword },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}
