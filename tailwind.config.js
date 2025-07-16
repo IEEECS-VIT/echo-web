@@ -3,7 +3,6 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 module.exports = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx}",
-    // add other paths if needed
   ],
   theme: {
     extend: {
@@ -13,4 +12,5 @@ module.exports = {
       },
     },
   },
-};
+  plugins:  [require('tailwind-scrollbar')],
+} 
