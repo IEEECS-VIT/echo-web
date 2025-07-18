@@ -3,12 +3,13 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 module.exports = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}", // add components folder if needed
   ],
   theme: {
-    extend: {},
     extend: {
       backgroundImage: {
-        'landing-gradient': 'linear-gradient(160deg,rgba(255, 167, 38, 1) 0%, rgba(168, 160, 160, 1) 21%, rgba(26, 32, 55, 1) 23%, rgba(20, 35, 92, 1) 43%, rgba(16, 37, 122, 1) 48%, rgba(26, 32, 55, 1) 71%, rgba(36, 50, 103, 1) 100%)',
+        'landing-gradient':
+            'linear-gradient(160deg,rgba(255, 167, 38, 1) 0%, rgba(168, 160, 160, 1) 21%, rgba(26, 32, 55, 1) 23%, rgba(20, 35, 92, 1) 43%, rgba(16, 37, 122, 1) 48%, rgba(26, 32, 55, 1) 71%, rgba(36, 50, 103, 1) 100%)',
       },
       keyframes: {
         'border-spin': {
@@ -25,14 +26,11 @@ module.exports = {
         'border-spin': 'border-spin 3s linear infinite',
         float: 'float 3s ease-in-out infinite',
       },
-    },
-    extend: {
       fontFamily: {
         poppins: ['Poppins', ...fontFamily.sans],
         jersey: ['"Jersey 10"', 'cursive'],
       },
     },
   },
-  plugins:  [require('tailwind-scrollbar'),
-],
-} 
+  plugins: [require('tailwind-scrollbar')],
+};
