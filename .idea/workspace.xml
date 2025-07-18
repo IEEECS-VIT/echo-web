@@ -5,8 +5,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2dee1387-15a0-4c2f-a8be-99b4fbe97d24" name="Changes" comment="Forget and reset password backend integration.">
+      <change afterPath="$PROJECT_DIR$/public/aboutus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/avatar1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/avatar2.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/avatar3.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/background.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/bg.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/bg0.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/bg3.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/circles.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/contactus.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/facebook.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/gaming_1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/hackathons.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/ieeecs.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/instagram.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/linkedin.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/logo.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/phonesample.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/popular.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/projectrepos.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/server-default.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/shark.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/study.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/techonology.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/websample.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/x.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/server-settings/components/ServerSettings/InvitePeople.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/server-settings/components/ServerSettings/Leave.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/server-settings/components/ServerSettings/Members.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/server-settings/components/ServerSettings/Overview.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/server-settings/components/ServerSettings/Role.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/server-settings/components/Sidebar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/server-settings/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/navbar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/shark.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/aos.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(app)/servers/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(app)/servers/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +71,7 @@
   }
 }</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -46,7 +87,7 @@
     "Node.js.supabaseClient.ts.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "cleanup-login-signup",
+    "git-widget-placeholder": "Merging cleanup-login-signup",
     "last_opened_file_path": "C:/Users/MEHELI GHOSH/WebstormProjects/echo-web/public",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -108,7 +149,7 @@
       <workItem from="1752329753324" duration="621000" />
       <workItem from="1752425652480" duration="1552000" />
       <workItem from="1752598096132" duration="7712000" />
-      <workItem from="1752670639445" duration="7398000" />
+      <workItem from="1752670639445" duration="12019000" />
     </task>
     <task id="LOCAL-00001" summary="I have fixed the stuff. I saw VITE on the resource material that was sent to us so i thought we needed to use it. Please reveiw it once.">
       <option name="closed" value="true" />
