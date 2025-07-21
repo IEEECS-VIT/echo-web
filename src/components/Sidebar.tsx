@@ -1,10 +1,11 @@
 "use client";
-
+import { getUser } from "../app/api";
+import type { User } from "../app/api";
 import {
   LayoutDashboard,
   Users,
   MessageSquareText,
-  User,
+  User as UserIcon,
   Phone,
   Bell,
   Settings,
@@ -21,7 +22,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Servers", icon: Users, path: "/servers" },
   { label: "Messages", icon: MessageSquareText, path: "/messages" },
-  { label: "Friends", icon: User, path: "/friends" },
+  { label: "Friends", icon: UserIcon, path: "/friends" },
   { label: "Channels", icon: Phone, path: "/channels" },
   { label: "Notifications", icon: Bell, path: "/notifications" },
 ];
@@ -29,7 +30,8 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const stored = localStorage.getItem("sidebarCollapsed");
     if (stored !== null) {
@@ -40,7 +42,23 @@ export default function Sidebar() {
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
   }, [collapsed]);
-
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (err) {
+        setError("Failed to load user profile. Please try again.");
+      }
+    };
+    fetchUser();
+  }, []);
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+  if (!user) {
+    return <div className="text-white">Loading...</div>;
+  }
   return (
     <aside
       className={clsx(
@@ -131,8 +149,8 @@ export default function Sidebar() {
           {!collapsed && (
             <div className="flex justify-between items-center flex-1">
               <div className="flex flex-col">
-                <span className="font-semibold text-white">Sophie Fortune</span>
-                <span className="text-xs text-gray-400">@sophiefortune</span>
+                <span className="font-semibold text-white">{user.fullname}</span>
+                <span className="text-xs text-gray-400">{user.username}</span>
               </div>
               <Settings className="text-gray-400 w-5 h-5 cursor-pointer" />
             </div>
