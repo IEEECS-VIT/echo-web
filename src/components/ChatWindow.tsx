@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Video, Phone, Plus } from "lucide-react";
 import MessageInput from "@/components/MessageInput";
+import {socket} from "@/socket";
+
+
+const channelId="room123"; //change this to userid for dms and channelid for channels
+const senderId= "SENDER"; //this will be the display name of user 
+
 
 // ✅ Timestamp component
 const ClientTimestamp: React.FC<{ timestamp: string }> = ({ timestamp }) => {
@@ -61,19 +67,63 @@ export default function ChatWindow() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    console.log('Socket initialized:', socket.connected);
+  
+    if (!socket.connected) {
+      console.log('Connecting socket...');
+      socket.connect();
+    }
+  
+    socket.on('connect', () => {
+      console.log('Socket connected:', socket.id);
+    });
+  
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err);
+    });
+  
+    return () => {
+      socket.off('connect');
+      socket.off('connect_error');
+    };
+  }, []);
+
+  useEffect(() => {
+    // Join the room
+    socket.emit("join_room", channelId);
+  
+    // Listen for messages
+    const handleIncomingMessage = (data: any) => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          name: data.senderId,
+          isSender: data.senderId === senderId,
+          message: data.content,
+          avatarUrl: data.senderId === senderId ? "/User_profil.png" : "https://avatars.dicebear.com/api/bottts/pranav.svg",
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+    };
+  
+    socket.on("chat_message", handleIncomingMessage);
+  
+    return () => {
+      socket.off("chat_message", handleIncomingMessage);
+    };
+  }, []);
+  
   const sendMessage = (text: string) => {
-    const now = new Date();
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        name: "RAHUL",
-        isSender: true,
-        message: text,
-        avatarUrl: "/User_profil.png",
-        timestamp: now.toISOString(),
-      },
-    ]);
+    console.log("Message sent");
+    if (!text.trim()) return;
+  
+    socket.emit("chat_message", {
+      channelId,
+      senderId,
+      content: text,
+    });
   };
 
   return (
