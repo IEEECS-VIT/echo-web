@@ -144,9 +144,7 @@ export default function ProfilePage() {
                                 </span>
                                 </h3>
                                 <p className="w-[41rem] text-white/60 text-sm border-t border-white/20 pt-4 text-[1.12rem]">
-                                    Gamer, dreamer, meme enthusiast. I run on caffeine and chaos. Fluent in
-                                    sarcasm, bad puns, and Discord emojis. Here to vibe, chat, laugh, and pretend
-                                    I'm productive.
+                                    {user?.bio||"Enter interesting details about you!"}
                                 </p>
                             </div>
                             <div className="mt-6">
