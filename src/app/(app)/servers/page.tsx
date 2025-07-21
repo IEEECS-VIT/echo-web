@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { FaHashtag, FaCog } from "react-icons/fa";
+import { FaHashtag, FaCog, FaVolumeUp } from "react-icons/fa";
+import  VoiceChannel  from "@/components/VoiceChannel";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import type { EmojiClickData } from "emoji-picker-react";
 import { useRouter } from "next/navigation";
@@ -12,6 +13,7 @@ const TENOR_API_KEY = process.env.NEXT_PUBLIC_TENOR_API_KEY!;
 const ServersPage: React.FC = () => {
   const router = useRouter();
   const [activeChannel, setActiveChannel] = useState("general");
+  const [activeVoiceChannel, setActiveVoiceChannel] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({
@@ -63,6 +65,11 @@ const ServersPage: React.FC = () => {
     }));
   };
 
+    const handlejoinvoiceChannel = (name: string) => {
+    setActiveVoiceChannel(name);
+  }
+
+
   const renderChannel = (name: string) => (
     <div
       key={name}
@@ -80,6 +87,26 @@ const ServersPage: React.FC = () => {
       {activeChannel === name && <FaCog size={12} />}
     </div>
   );
+
+  const renderVoiceChannel = (name: string) => (
+    <div
+      key={name}
+      className={`flex items-center justify-between px-3 py-1 text-sm rounded-md cursor-pointer transition-all ${
+        activeVoiceChannel === name
+          ? "bg-[#2f3136] text-white"
+          : "text-gray-400 hover:bg-[#2f3136] hover:text-white"
+      }`}
+      onClick={() => handlejoinvoiceChannel(name)}
+    >
+      <span className="flex items-center gap-1">
+        <FaVolumeUp size={12} />
+        {name}
+      </span>
+      {activeVoiceChannel === name && <FaCog size={12} />}
+    </div>
+  );
+
+
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -197,9 +224,17 @@ const ServersPage: React.FC = () => {
               </button>
             </div>
             {expandedSections[section.title] &&
-              section.channels.map((channel) => renderChannel(channel))}
+              (section.title === "Voice Channels" 
+                ? section.channels.map((channel) => renderVoiceChannel(channel))
+                : section.channels.map((channel) => renderChannel(channel)))}
           </div>
         ))}
+        {activeVoiceChannel && (
+          <div className="mt-4">
+            <VoiceChannel channelId={activeVoiceChannel} 
+             onHangUp={() => setActiveVoiceChannel(null)} />
+          </div>
+        )}
       </div>
 
       {/* Chat Window */}
