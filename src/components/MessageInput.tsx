@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Smile, Send, ImagePlus, Camera, Mic } from "lucide-react";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 
-const TENOR_API_KEY = "AIzaSyDtnkgAN-yNgzzyce6PJ11M_Ojlp9CHrX4";
 
 export default function MessageInput({
   sendMessage,
