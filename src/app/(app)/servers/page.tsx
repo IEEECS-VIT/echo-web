@@ -5,12 +5,33 @@ import { FaHashtag, FaCog, FaVolumeUp } from "react-icons/fa";
 import  VoiceChannel  from "@/components/VoiceChannel";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import type { EmojiClickData } from "emoji-picker-react";
-import { useRouter } from "next/navigation";
+import {
+  fetchServers,
+  fetchChannelsByUser,
+  fetchMessages,
+  uploadMessage,
+} from "@/app/api/API";
 
 const TENOR_API_KEY = process.env.NEXT_PUBLIC_TENOR_API_KEY!;
 
+const serverIcons: string[] = [
+  "/hackbattle.png",
+  "/image_6.png",
+  "/image_7.png",
+  "/image_9.png",
+  "/image_6.png",
+  "/hackbattle.png",
+];
+
+interface Channel {
+  id: string;
+  name: string;
+  type: string;
+  is_private: boolean;
+}
 
 const ServersPage: React.FC = () => {
+
   const router = useRouter();
   const [activeChannel, setActiveChannel] = useState("general");
   const [activeVoiceChannel, setActiveVoiceChannel] = useState<string | null>(null);
@@ -23,90 +44,182 @@ const ServersPage: React.FC = () => {
     Events: true,
     Resources: true,
   });
+
+  const [servers, setServers] = useState<any[]>([]);
+  const [selectedServerId, setSelectedServerId] = useState<string>("");
+  const [selectedServerName, setSelectedServerName] = useState<string>("");
+  const [channelsByServer, setChannelsByServer] = useState<
+    Record<string, Channel[]>
+  >({});
+
   const [message, setMessage] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [showGifs, setShowGifs] = useState(false);
   const [gifResults, setGifResults] = useState<any[]>([]);
-  const [messages, setMessages] = useState([
-    {
-      name: "Alice",
-      seed: "Alice",
-      color: "text-blue-400",
-      message: "Hey everyone! Welcome to the IEEE CS Chapter server!",
-      timestamp: "2025-06-03T18:00:00Z",
-    },
-    {
-      name: "Bob",
-      seed: "Bob",
-      color: "text-green-400",
-      message: "Glad to be here!",
-      timestamp: "2025-06-03T18:05:00Z",
-    },
-    {
-      name: "Alice",
-      seed: "Alice2",
-      color: "text-red-400",
-      message:
-        "Reminder: Our weekly meeting is today at 10 pm in the #chapter-meetings voice channel. See you there.",
-      timestamp: "2025-06-03T18:10:00Z",
-    },
-  ]);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const userId =
+    typeof window !== "undefined"
+      ? localStorage.getItem("userId") || "guest"
+      : "guest";
+
+  useEffect(() => {
+    const loadServers = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchServers();
+        setServers(data);
+        if (data.length > 0) {
+          setSelectedServerId(data[0].id);
+          setSelectedServerName(data[0].name);
+        }
+      } catch (err: any) {
+        console.error("Error fetching servers", err);
+        setError("Failed to load servers. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadServers();
+  }, []);
+
+useEffect(() => {
+  if (!selectedServerId || !userId) return;
+
+  const loadChannels = async () => {
+    try {
+      const data: Channel[] = await fetchChannelsByUser(userId);
+      setChannelsByServer((prev) => ({
+        ...prev,
+        [selectedServerId]: data,
+      }));
+    } catch (err) {
+      console.error("Error fetching channels", err);
+      setError("Failed to load channels");
+    }
+  };
+
+  loadChannels();
+}, [selectedServerId, userId]);
+
+useEffect(() => {
+  if (!activeChannel) return;
+
+  const loadMessages = async () => {
+    try {
+      const res = await fetchMessages(activeChannel.id, false);
+      setMessages(res.data || []);
+    } catch (err) {
+      console.error("Failed to fetch messages", err);
+      setError("Failed to load messages");
+    }
+  };
+
+  loadMessages();
+}, [activeChannel]);
+
+// Helper and render functions
+const handlejoinvoiceChannel = (name: string) => {
+  setActiveVoiceChannel(name);
+};
+
+// MODIFIED to work with a Channel object
+const renderChannel = (channel: Channel) => (
+  <div
+    key={channel.id}
+    className={`flex items-center justify-between px-3 py-1 text-sm rounded-md cursor-pointer transition-all ${
+      activeChannel?.id === channel.id // Use object ID for comparison
+        ? "bg-[#2f3136] text-white"
+        : "text-gray-400 hover:bg-[#2f3136] hover:text-white"
+    }`}
+    onClick={() => setActiveChannel(channel)} // Set the entire object as active
+  >
+    <span className="flex items-center gap-1">
+      <FaHashtag size={12} />
+      {channel.name}
+    </span>
+    {activeChannel?.id === channel.id && <FaCog size={12} />}
+  </div>
+);
+
+// No changes needed for voice channel functions if they are handled by name
+const renderVoiceChannel = (name: string) => (
+  <div
+    key={name}
+    className={`flex items-center justify-between px-3 py-1 text-sm rounded-md cursor-pointer transition-all ${
+      activeVoiceChannel === name
+        ? "bg-[#2f3136] text-white"
+        : "text-gray-400 hover:bg-[#2f3136] hover:text-white"
+    }`}
+    onClick={() => handlejoinvoiceChannel(name)}
+  >
+    <span className="flex items-center gap-1">
+      <FaVolumeUp size={12} />
+      {name}
+    </span>
+    {activeVoiceChannel === name && <FaCog size={12} />}
+  </div>
+);
+
+// Standalone utility function, no changes needed
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+  return date.toLocaleString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const toggleSection = (title: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
+  const handleSend = async () => {
+    if (!message.trim() || !activeChannel) return;
+
+    try {
+      const res = await uploadMessage({
+        message,
+        senderId: userId,
+        channelId: activeChannel.id,
+        isDM: false,
+      });
+      setMessages((prev) => [...prev, res]);
+      setMessage("");
+      setShowEmoji(false);
+      setShowGifs(false);
+    } catch (err) {
+      console.error("Error sending message:", err);
+      setError("Failed to send message");
+    }
   };
 
-    const handlejoinvoiceChannel = (name: string) => {
-    setActiveVoiceChannel(name);
-  }
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    setMessage((prev) => prev + emojiData.emoji);
+  };
 
+  const fetchTenorGifs = async () => {
+    try {
+      const res = await fetch(
+        `https://tenor.googleapis.com/v2/search?q=trending&key=${TENOR_API_KEY}&limit=12`
+      );
+      const data = await res.json();
+      setGifResults(Array.isArray(data.results) ? data.results : []);
+    } catch {
+      setGifResults([]);
+    }
+  };
 
-  const renderChannel = (name: string) => (
-    <div
-      key={name}
-      className={`flex items-center justify-between px-3 py-1 text-sm rounded-md cursor-pointer transition-all ${
-        activeChannel === name
-          ? "bg-[#2f3136] text-white"
-          : "text-gray-400 hover:bg-[#2f3136] hover:text-white"
-      }`}
-      onClick={() => setActiveChannel(name)}
-    >
-      <span className="flex items-center gap-1">
-        <FaHashtag size={12} />
-        {name}
-      </span>
-      {activeChannel === name && <FaCog size={12} />}
-    </div>
-  );
-
-  const renderVoiceChannel = (name: string) => (
-    <div
-      key={name}
-      className={`flex items-center justify-between px-3 py-1 text-sm rounded-md cursor-pointer transition-all ${
-        activeVoiceChannel === name
-          ? "bg-[#2f3136] text-white"
-          : "text-gray-400 hover:bg-[#2f3136] hover:text-white"
-      }`}
-      onClick={() => handlejoinvoiceChannel(name)}
-    >
-      <span className="flex items-center gap-1">
-        <FaVolumeUp size={12} />
-        {name}
-      </span>
-      {activeVoiceChannel === name && <FaCog size={12} />}
-    </div>
-  );
-
-
+  useEffect(() => {
+    if (showGifs) fetchTenorGifs();
+  }, [showGifs]);
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
@@ -120,72 +233,66 @@ const ServersPage: React.FC = () => {
     });
   };
 
-  const handleSend = () => {
-    if (!message.trim()) return;
-    setMessages((prev) => [
-      ...prev,
-      {
-        name: "You",
-        seed: "you",
-        color: "text-purple-400",
-        message,
-        timestamp: new Date().toISOString(),
-      },
-    ]);
-    setMessage("");
-    setShowEmoji(false);
-    setShowGifs(false);
-  };
+  const renderChannel = (channel: Channel) => (
+    <div
+      key={channel.id}
+      className={`flex items-center justify-between px-3 py-1 text-sm rounded-md cursor-pointer transition-all ${
+        activeChannel?.id === channel.id
+          ? "bg-[#2f3136] text-white"
+          : "text-gray-400 hover:bg-[#2f3136] hover:text-white"
+      }`}
+      onClick={() => setActiveChannel(channel)}
+    >
+      <span className="flex items-center gap-1">
+        <FaHashtag size={12} />
+        {channel.name}
+      </span>
+      {activeChannel?.id === channel.id && <FaCog size={12} />}
+    </div>
+  );
 
-  const handleEmojiClick = (emojiData: EmojiClickData) => {
-    setMessage((prev) => prev + emojiData.emoji);
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-black text-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p>Loading servers...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const fetchTenorGifs = async () => {
-    try {
-      const res = await fetch(
-        `https://tenor.googleapis.com/v2/search?q=trending&key=${TENOR_API_KEY}&limit=12`
-      );
-      const data = await res.json();
-      console.log("Tenor GIF Data:", data);
-      if (data.results && Array.isArray(data.results)) {
-        setGifResults(data.results);
-      } else {
-        console.warn("Unexpected Tenor response:", data);
-        setGifResults([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch GIFs:", error);
-      setGifResults([]);
-    }
-  };
-
-  useEffect(() => {
-    if (showGifs) fetchTenorGifs();
-  }, [showGifs]);
-
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-black text-white">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
-      <div
-        className="w-16 p-2 flex flex-col items-center overflow-hidden bg-cover bg-center"
-        style={{ backgroundImage: "url('/gradient-background.png')" }}
-      >
-        {[
-          "/hackbattle.png",
-          "/image_6.png",
-          "/image_7.png",
-          "/image_9.png",
-          "/image_6.png",
-          "/hackbattle.png",
-        ].map((src, idx, arr) => (
+      {/* Server Sidebar */}
+      <div className="w-16 p-2 flex flex-col bg-black items-center bg-cover bg-center">
+        {servers.map((server, idx) => (
           <img
-            key={idx}
-            src={src}
-            alt={`Server ${idx + 1}`}
-            className={`w-12 h-12 rounded-full hover:scale-105 transition-transform cursor-pointer ${
-              idx < arr.length - 1 ? "mb-8" : ""
+            key={server.id}
+            src={server.iconUrl || serverIcons[idx % serverIcons.length]}
+            alt={server.name}
+            className={`w-12 h-12 rounded-full hover:scale-105 transition-transform cursor-pointer mb-6 ${
+              selectedServerId === server.id ? "ring-2 ring-white" : ""
             }`}
+            onClick={() => {
+              setSelectedServerId(server.id);
+              setSelectedServerName(server.name);
+            }}
           />
         ))}
       </div>
@@ -234,28 +341,38 @@ const ServersPage: React.FC = () => {
             <VoiceChannel channelId={activeVoiceChannel} 
              onHangUp={() => setActiveVoiceChannel(null)} />
           </div>
+
+      {/* Channel List */}
+      <div className="w-72 overflow-y-scroll text-white px-4 py-6 space-y-4 border-r border-gray-800 bg-gradient-to-b from-black via-black to-[#0f172a]">
+        <h2 className="text-xl font-bold mb-2">{selectedServerName}</h2>
+        {(channelsByServer[selectedServerId] || []).map((channel) =>
+          renderChannel(channel)
+
         )}
       </div>
 
       {/* Chat Window */}
-      <div className="flex-1 relative text-white px-6 pt-6 pb-44 overflow-hidden bg-black bg-[radial-gradient(ellipse_at_bottom,rgba(37,99,235,0.15)_0%,rgba(0,0,0,1)_85%)] flex flex-col">
-        <h1 className="text-2xl font-bold mb-4 text-white drop-shadow-[0_2px_4px_rgba(255,255,255,0.3)] [user-select:none]">
-          Welcome to the server
+      <div className="flex-1 relative text-white px-6 pt-6 pb-6 overflow-hidden bg-black bg-[radial-gradient(ellipse_at_bottom,rgba(37,99,235,0.15)_0%,rgba(0,0,0,1)_85%)] flex flex-col">
+        <h1 className="text-2xl font-bold mb-4 text-center">
+          Welcome to #{activeChannel?.name || "channel"}
         </h1>
 
-        {/* Messages List */}
-        <div className="flex-1 flex flex-col justify-end overflow-y-auto gap-6 pr-2">
-          <div className="flex flex-col gap-6">
+        <div className="flex-1 flex flex-col justify-end overflow-y-auto gap-4 pr-2">
+          <div className="flex flex-col gap-4">
             {messages.map((msg, idx) => (
               <div className="flex items-start gap-4" key={idx}>
                 <img
-                  src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${msg.seed}`}
+                  src={`https://api.dicebear.com/7.x/thumbs/svg?seed=${
+                    msg.seed || "user"
+                  }`}
                   alt="avatar"
                   className="w-10 h-10 rounded-full"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className={`font-semibold ${msg.color}`}>
+                    <span
+                      className={`font-semibold ${msg.color || "text-white"}`}
+                    >
                       {msg.name}
                     </span>
                     <span className="text-xs text-gray-400">
@@ -278,76 +395,69 @@ const ServersPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Floating Input */}
-        <div className="absolute bottom-14 left-1/2 transform -translate-x-1/2 w-[90%] max-w-2xl">
-          <div className="h-[1px] bg-white/10 mb-2" />
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl flex items-center p-3 ring-2 ring-white/10 shadow-lg relative">
-            <button
-              className="px-3 text-white text-xl"
-              onClick={() => setShowEmoji((prev) => !prev)}
-            >
-              😊
-            </button>
-            <button
-              className="px-3 text-white text-xl"
-              onClick={() => setShowGifs((prev) => !prev)}
-            >
-              GIF
-            </button>
-            <input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="flex-1 bg-transparent outline-none text-white placeholder-gray-300 px-4"
-              placeholder={`Message #${activeChannel}`}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            />
-            <button
-              className="px-3 text-white font-semibold hover:text-blue-400"
-              onClick={handleSend}
-            >
-              Send
-            </button>
+        {/* Input Box */}
+        <div className="mt-4 bg-white/10 backdrop-blur-md rounded-2xl flex items-center p-4 ring-2 ring-white/10 shadow-lg w-[90%] max-w-2xl mx-auto">
+          <button
+            className="px-3 text-white text-xl"
+            onClick={() => setShowEmoji((prev) => !prev)}
+          >
+            😊
+          </button>
+          <button
+            className="px-3 text-white text-xl"
+            onClick={() => setShowGifs((prev) => !prev)}
+          >
+            GIF
+          </button>
+          <input
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="flex-1 bg-transparent outline-none text-white placeholder-gray-300 px-4 py-3 text-base"
+            placeholder={`Message #${activeChannel?.name || ""}`}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          />
+          <button
+            className="px-3 text-white font-semibold hover:text-blue-400"
+            onClick={handleSend}
+          >
+            Send
+          </button>
 
-            {showEmoji && (
-              <div className="absolute bottom-16 left-0 z-50">
-                <EmojiPicker
-                  onEmojiClick={handleEmojiClick}
-                  theme={Theme.DARK}
-                />
-              </div>
-            )}
+          {showEmoji && (
+            <div className="absolute bottom-20 left-4 z-50">
+              <EmojiPicker onEmojiClick={handleEmojiClick} theme={Theme.DARK} />
+            </div>
+          )}
 
-            {showGifs && (
-              <div className="absolute bottom-16 right-0 z-50 w-[300px] h-[300px] bg-black rounded-xl overflow-auto p-2 space-y-2">
-                {gifResults.map((gif, idx) => {
-                  const gifUrl = gif.media_formats?.gif?.url;
-                  if (!gifUrl) return null;
-                  return (
-                    <img
-                      key={idx}
-                      src={gifUrl}
-                      alt="gif"
-                      className="w-full rounded cursor-pointer"
-                      onClick={() => {
-                        setMessages((prev) => [
-                          ...prev,
-                          {
-                            name: "You",
-                            seed: "you",
-                            color: "text-purple-400",
-                            message: gifUrl,
-                            timestamp: new Date().toISOString(),
-                          },
-                        ]);
-                        setShowGifs(false);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          <div className="h-[1px] bg-white/10 mt-2" />
+          {showGifs && (
+            <div className="absolute bottom-20 right-4 z-50 w-[300px] h-[300px] bg-black rounded-xl overflow-auto p-2 space-y-2">
+              {gifResults.map((gif, idx) => {
+                const gifUrl = gif.media_formats?.gif?.url;
+                if (!gifUrl) return null;
+                return (
+                  <img
+                    key={idx}
+                    src={gifUrl}
+                    alt="gif"
+                    className="w-full rounded cursor-pointer"
+                    onClick={() => {
+                      setMessages((prev) => [
+                        ...prev,
+                        {
+                          name: "You",
+                          seed: "you",
+                          color: "text-purple-400",
+                          message: gifUrl,
+                          timestamp: new Date().toISOString(),
+                        },
+                      ]);
+                      setShowGifs(false);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

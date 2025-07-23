@@ -1,10 +1,11 @@
 "use client";
-
+import { getUser } from "../app/api";
+import type { User } from "../app/api";
 import {
   LayoutDashboard,
   Users,
   MessageSquareText,
-  User,
+  User as UserIcon,
   Phone,
   Bell,
   Settings,
@@ -21,7 +22,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Servers", icon: Users, path: "/servers" },
   { label: "Messages", icon: MessageSquareText, path: "/messages" },
-  { label: "Friends", icon: User, path: "/friends" },
+  { label: "Friends", icon: UserIcon, path: "/friends" },
   { label: "Channels", icon: Phone, path: "/channels" },
   { label: "Notifications", icon: Bell, path: "/notifications" },
 ];
@@ -29,6 +30,8 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("sidebarCollapsed");
@@ -40,6 +43,21 @@ export default function Sidebar() {
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
   }, [collapsed]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setUser(userData);
+      } catch (err) {
+        setError("Failed to load user profile. Please try again.");
+      }
+    };
+    fetchUser();
+  }, []);
+
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (!user) return <div className="text-white">Loading...</div>;
 
   return (
     <aside
@@ -56,7 +74,7 @@ export default function Sidebar() {
 
       {/* Sidebar Content */}
       <div className="relative z-10 flex flex-col h-full justify-between">
-        {/* Top section: Logo + Toggle */}
+        {/* Top Section */}
         <div>
           <div className="flex items-center justify-between p-4">
             <Image
@@ -73,11 +91,7 @@ export default function Sidebar() {
               onClick={() => setCollapsed((prev) => !prev)}
               className="text-white hover:text-gray-400 transition"
             >
-              {collapsed ? (
-                <ChevronsRight size={20} />
-              ) : (
-                <ChevronsLeft size={20} />
-              )}
+              {collapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
             </button>
           </div>
 
@@ -99,7 +113,6 @@ export default function Sidebar() {
                     {!collapsed && <span>{item.label}</span>}
                   </Link>
 
-                  {/* Tooltip (collapsed only) */}
                   {collapsed && (
                     <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-20 px-3 py-1 text-sm text-white bg-black rounded shadow-lg opacity-0 group-hover:opacity-100 transition">
                       {item.label}
@@ -112,9 +125,9 @@ export default function Sidebar() {
         </div>
 
         {/* Bottom Section: Profile */}
-        <div className="p-4 flex items-center gap-3 mt-auto">
-          <Link href="/profile">
-            <div className="relative group shrink-0 cursor-pointer">
+        <Link href="/profile-settings">
+          <div className="p-4 flex items-center gap-3 mt-auto cursor-pointer group hover:bg-white/10 transition rounded-lg">
+            <div className="relative shrink-0">
               <div className="p-[2px] rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-indigo-500">
                 <Image
                   src="/User_profil.png"
@@ -126,18 +139,18 @@ export default function Sidebar() {
               </div>
               <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#1a1a1a] rounded-full" />
             </div>
-          </Link>
 
-          {!collapsed && (
-            <div className="flex justify-between items-center flex-1">
-              <div className="flex flex-col">
-                <span className="font-semibold text-white">Sophie Fortune</span>
-                <span className="text-xs text-gray-400">@sophiefortune</span>
+            {!collapsed && (
+              <div className="flex justify-between items-center flex-1">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-white">{user.fullname}</span>
+                  <span className="text-xs text-gray-400">{user.username}</span>
+                </div>
+                <Settings className="text-gray-400 w-5 h-5 group-hover:text-white" />
               </div>
-              <Settings className="text-gray-400 w-5 h-5 cursor-pointer" />
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        </Link>
       </div>
     </aside>
   );
