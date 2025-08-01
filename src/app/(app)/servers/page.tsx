@@ -42,6 +42,7 @@ const ServersPage: React.FC = () => {
     message: string;
     timestamp: string;
   }>>([]);
+
   const [activeVoiceChannel, setActiveVoiceChannel] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
@@ -158,7 +159,7 @@ const renderChannel = (channel: Channel) => (
     {activeChannel?.id === channel.id && <FaCog size={12} />}
   </div>
 );
-
+ 
 // No changes needed for voice channel functions if they are handled by name
 const renderVoiceChannel = (name: string) => (
   <div
@@ -319,6 +320,7 @@ const formatTimestamp = (timestamp: string) => {
             {expandedSections[section.title] &&
               (section.title === "Voice Channels" 
                 ? section.channels.map((channel) => renderVoiceChannel(channel))
+
                 : section.channels.map((channel) => renderChannel({
                     id: channel,
                     name: channel,
@@ -332,6 +334,13 @@ const formatTimestamp = (timestamp: string) => {
             <VoiceChannel channelId={activeVoiceChannel} 
              onHangUp={() => setActiveVoiceChannel(null)} />
           </div>
+
+      {/* Channel List */}
+      <div className="w-72 overflow-y-scroll text-white px-4 py-6 space-y-4 border-r border-gray-800 bg-gradient-to-b from-black via-black to-[#0f172a]">
+        <h2 className="text-xl font-bold mb-2">{selectedServerName}</h2>
+        {(channelsByServer[selectedServerId] || []).map((channel) =>
+          renderChannel(channel)
+
         )}
       </div>
 
