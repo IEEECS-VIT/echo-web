@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // ---------- Types ----------
 export interface Server {
@@ -84,7 +84,7 @@ export const createServer = async (payload: {
     }
 
     const response = await apiClient.post<Server>(
-      "/api/newserver/create/",
+      "/newserver/create/",
       formData,
       {
         headers: {
@@ -101,17 +101,8 @@ export const createServer = async (payload: {
 
 export const fetchServers = async (): Promise<Server[]> => {
   try {
-    const token = getToken();
-    if (!token) {
-      throw new Error("No authentication token found");
-    }
-
-    const response = await apiClient.get("/api/newserver/getServers/", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const response = await axios.get(`${API_BASE_URL}/newserver/getServers/`);
+    console.log("response.data")
     return response.data;
   } catch (error) {
     console.error("Error fetching servers:", error);
@@ -122,7 +113,7 @@ export const fetchServers = async (): Promise<Server[]> => {
 // ---------- Channel APIs ----------
 export const fetchChannelsByUser = async (userId: string): Promise<any> => {
   try {
-    const response = await apiClient.get(`/api/user/${userId}/getChannels`);
+    const response = await apiClient.get(`/user/${userId}/getChannels`);
     return response.data;
   } catch (error) {
     console.error("Error fetching channels:", error);
@@ -139,7 +130,7 @@ export const uploadMessage = async (payload: {
 }): Promise<Message> => {
   try {
     const response = await apiClient.post<Message>(
-      "/api/message/upload",
+      "/message/upload",
       payload
     );
     return response.data;
@@ -159,7 +150,7 @@ export const fetchMessages = async (
       messages?: Message[];
       data?: Message[];
     }>(
-      `/api/message/fetch?channel_id=${channelId}&is_dm=${isDM}&offset=${offset}`
+      `/message/fetch?channel_id=${channelId}&is_dm=${isDM}&offset=${offset}`
     );
 
     const messages = response.data.messages || response.data.data || [];
@@ -174,7 +165,7 @@ export const fetchMessages = async (
 // ---------- Direct Messages ----------
 export const getUserDMs = async (userId: string): Promise<any> => {
   try {
-    const response = await apiClient.get(`/api/message/${userId}/getDms`);
+    const response = await apiClient.get(`/message/${userId}/getDms`);
     return response.data;
   } catch (error: any) {
     if (error?.code === "ECONNABORTED") {

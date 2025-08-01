@@ -11,6 +11,7 @@ import {
   fetchMessages,
   uploadMessage,
 } from "@/app/api/API";
+import { useRouter } from "next/navigation";
 
 const TENOR_API_KEY = process.env.NEXT_PUBLIC_TENOR_API_KEY!;
 
@@ -33,7 +34,14 @@ interface Channel {
 const ServersPage: React.FC = () => {
 
   const router = useRouter();
-  const [activeChannel, setActiveChannel] = useState("general");
+  const [activeChannel, setActiveChannel] = useState<Channel | null>(null);
+  const [messages, setMessages] = useState<Array<{
+    name: string;
+    seed?: string;
+    color?: string;
+    message: string;
+    timestamp: string;
+  }>>([]);
   const [activeVoiceChannel, setActiveVoiceChannel] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
@@ -65,6 +73,13 @@ const ServersPage: React.FC = () => {
       ? localStorage.getItem("userId") || "guest"
       : "guest";
 
+  const toggleSection = (sectionTitle: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionTitle]: !prev[sectionTitle]
+    }));
+  };
+
   useEffect(() => {
     const loadServers = async () => {
       try {
@@ -82,7 +97,6 @@ const ServersPage: React.FC = () => {
         setLoading(false);
       }
     };
-
     loadServers();
   }, []);
 
@@ -221,35 +235,7 @@ const formatTimestamp = (timestamp: string) => {
     if (showGifs) fetchTenorGifs();
   }, [showGifs]);
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const renderChannel = (channel: Channel) => (
-    <div
-      key={channel.id}
-      className={`flex items-center justify-between px-3 py-1 text-sm rounded-md cursor-pointer transition-all ${
-        activeChannel?.id === channel.id
-          ? "bg-[#2f3136] text-white"
-          : "text-gray-400 hover:bg-[#2f3136] hover:text-white"
-      }`}
-      onClick={() => setActiveChannel(channel)}
-    >
-      <span className="flex items-center gap-1">
-        <FaHashtag size={12} />
-        {channel.name}
-      </span>
-      {activeChannel?.id === channel.id && <FaCog size={12} />}
-    </div>
-  );
+  // Using the previously defined formatTimestamp and renderChannel functions
 
   if (loading) {
     return (
@@ -333,7 +319,12 @@ const formatTimestamp = (timestamp: string) => {
             {expandedSections[section.title] &&
               (section.title === "Voice Channels" 
                 ? section.channels.map((channel) => renderVoiceChannel(channel))
-                : section.channels.map((channel) => renderChannel(channel)))}
+                : section.channels.map((channel) => renderChannel({
+                    id: channel,
+                    name: channel,
+                    type: 'text',
+                    is_private: false
+                  })))}
           </div>
         ))}
         {activeVoiceChannel && (
@@ -341,13 +332,6 @@ const formatTimestamp = (timestamp: string) => {
             <VoiceChannel channelId={activeVoiceChannel} 
              onHangUp={() => setActiveVoiceChannel(null)} />
           </div>
-
-      {/* Channel List */}
-      <div className="w-72 overflow-y-scroll text-white px-4 py-6 space-y-4 border-r border-gray-800 bg-gradient-to-b from-black via-black to-[#0f172a]">
-        <h2 className="text-xl font-bold mb-2">{selectedServerName}</h2>
-        {(channelsByServer[selectedServerId] || []).map((channel) =>
-          renderChannel(channel)
-
         )}
       </div>
 
