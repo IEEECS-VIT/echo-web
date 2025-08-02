@@ -1,4 +1,8 @@
 import { apiClient } from "@/utils/apiClient";
+import axios from "axios";
+import { getUser } from "../api";
+import { get } from "http";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // ---------- Types ----------
 export interface Server {
@@ -72,7 +76,8 @@ export const createServer = async (payload: {
 
 export const fetchServers = async (): Promise<Server[]> => {
   try {
-    const response = await apiClient.get("/newserver/getServers/");
+    const response = await axios.get(`${API_BASE_URL}/newserver/getServers/`);
+    console.log("response.data")
     return response.data;
   } catch (error) {
     console.error("Error fetching servers:", error);
@@ -84,8 +89,7 @@ export const fetchServers = async (): Promise<Server[]> => {
 // The server can identify the user from the request cookie, so userId is not needed.
 export const fetchChannelsByServer = async (serverId: string): Promise<any> => {
   try {
-    // The endpoint should be designed to fetch channels for the authenticated user for a given server.
-    const response = await apiClient.get(`/channel/${serverId}/getChannels`);
+    const response = await apiClient.get(`/user/${userId}/getChannels`);
     return response.data;
   } catch (error) {
     console.error("Error fetching channels:", error);
@@ -133,11 +137,12 @@ export const fetchMessages = async (
   }
 };
 
+const userId= getUser();
 // ---------- Direct Messages ----------
 // The server identifies the user from the cookie, so userId is not needed.
 export const getUserDMs = async (): Promise<any> => {
   try {
-    const response = await apiClient.get(`/dms`);
+    const response = await apiClient.get(`/message/${userId}/getDms`);
     return response.data;
   } catch (error: any) {
     if (error?.code === "ECONNABORTED") {
