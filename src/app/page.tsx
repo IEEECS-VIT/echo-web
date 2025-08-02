@@ -79,12 +79,15 @@ export default function Home() {
 
               {/* Buttons */}
               <div className='flex flex-col sm:flex-row items-center justify-center md:justify-start mt-8 gap-4 md:pl-10'>
-                <div className='card-wrapper-1 h-[60px] w-[120px] cursor-pointer'>
+
+                <div className='card-wrapper-1 h-[60px] w-[120px] cursor-pointer'
+                     onClick={() => router.push('/login')}>
                   <div className='card-content-1 flex items-center justify-center text-xs'>
                     <div className='max-w-[80%] text-center text-lg font-bold'>Login</div>
                   </div>
                 </div>
-                <div className='card-wrapper-2 h-[60px] w-[120px] cursor-pointer'>
+                <div className='card-wrapper-2 h-[60px] w-[120px] cursor-pointer'
+                     onClick={() => router.push('/login')}>
                   <div className='card-content-2 flex items-center justify-center text-xs'>
                     <div className='max-w-[80%] text-center text-lg font-bold'>Signup</div>
                   </div>

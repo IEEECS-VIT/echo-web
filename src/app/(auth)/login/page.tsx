@@ -3,7 +3,7 @@ import { login } from "../../api";
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
+import { supabase } from '@/lib/supabaseClient';
 export default function Login() {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +26,7 @@ export default function Login() {
       }
       setMessage(response.data.message || 'Login successful!');
 
-      router.push('/servers ');
+      router.push('/servers');
       }
 
     } catch (error: any) {
@@ -38,7 +38,18 @@ export default function Login() {
       );
     }
   }
-
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/servers`,
+      },
+    });
+    if (error) {
+      setMessage(error.message);
+      setSuccess(false);
+    }
+  };
   return (
       <div className="flex h-screen bg-black font-sans">
         <div className="w-1/2 h-full">
@@ -150,6 +161,7 @@ export default function Login() {
             {/* Google Sign In Button */}
             <button
                 type="button"
+                onClick={handleGoogleLogin}
                 className="flex items-center justify-center w-full py-3 mb-2 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-100 transition"
             >
               <img src="/Google.svg" alt="Google" className="w-6 h-6 mr-3" />
