@@ -181,6 +181,7 @@ const ServersPage: React.FC = () => {
   
     try {
       const newMessage = {
+        id: crypto.randomUUID(), // Generate a unique ID for the message
         channelId: activeChannel.id,
         message: content,
         name: user.fullname,
