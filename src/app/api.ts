@@ -91,12 +91,13 @@ catch(error) {
         throw error;
     }
 }
+}
 
- async function getUser(): Promise<User | null> {
+
+ export async function getUser(): Promise<User | null> {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
         return JSON.parse(storedUser) as User;
     }
     return null;
-}
-}
+};
