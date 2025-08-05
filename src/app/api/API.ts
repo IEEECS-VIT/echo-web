@@ -1,8 +1,8 @@
 import { apiClient } from "@/utils/apiClient";
-import axios from "axios";
+
 import { getUser } from "../api";
 import { get } from "http";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // ---------- Types ----------
 export interface Server {
@@ -76,7 +76,7 @@ export const createServer = async (payload: {
 
 export const fetchServers = async (): Promise<Server[]> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/newserver/getServers/`);
+    const response = await apiClient.get(`${API_BASE_URL}/newserver/getServers/`);
     console.log("response.data")
     return response.data;
   } catch (error) {
@@ -89,7 +89,7 @@ export const fetchServers = async (): Promise<Server[]> => {
 // The server can identify the user from the request cookie, so userId is not needed.
 export const fetchChannelsByServer = async (serverId: string): Promise<any> => {
   try {
-    const response = await apiClient.get(`/user/${userId}/getChannels`);
+    const response = await apiClient.get(`/channel/${serverId}/getChannels`);
     return response.data;
   } catch (error) {
     console.error("Error fetching channels:", error);
