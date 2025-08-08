@@ -20,6 +20,7 @@ export default function Login() {
     try {
       const data = await login(identifier, password);
       console.log("Login response:", data);
+
       setSuccess(true);
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(data.user));
