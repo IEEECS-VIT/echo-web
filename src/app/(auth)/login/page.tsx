@@ -1,5 +1,5 @@
 'use client';
-import { login } from "../../api";
+import { login,getToken } from "../../api";
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -18,17 +18,20 @@ export default function Login() {
     setSuccess(false);
 
     try {
-      const response = await login(identifier, password);
-      if(response.status==200){
+      const data = await login(identifier, password);
+      console.log("Login response:", data);
       setSuccess(true);
       if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("user", JSON.stringify(data.user));
+        if (data.token) {
+          localStorage.setItem("access_token", data.token);
+          console.log("Saved token:", data.token);
+          console.log("Current in localStorage:", localStorage.getItem("access_token"));
+          getToken(data.token);
+        }
       }
-      setMessage(response.data.message || 'Login successful!');
-
+      setMessage(data.message || 'Login successful!');
       router.push('/servers');
-      }
-
     } catch (error: any) {
       setSuccess(false);
       setMessage(
@@ -36,6 +39,11 @@ export default function Login() {
           error?.message ||
           'Login failed. Please try again.'
       );
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user");
+        getToken(undefined);  // clear token in axios headers
+      }
     }
   }
   const handleGoogleLogin = async () => {
@@ -99,7 +107,6 @@ export default function Login() {
                 <label className="text-white text-sm font-light">Email or Username</label>
                 <input
                     type="text"
-                    placeholder="Email or Username"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     className="w-full px-4 py-2 mt-1 text-white bg-transparent border border-white rounded-md focus:outline-none"
