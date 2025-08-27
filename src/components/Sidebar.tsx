@@ -1,6 +1,6 @@
 "use client";
 import { getUser } from "../app/api";
-import type { User } from "../app/api";
+import type { profile } from "../app/api";
 import {
   LayoutDashboard,
   Users,
@@ -30,7 +30,7 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<profile | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,6 +61,7 @@ export default function Sidebar() {
 
   return (
     <aside
+    
       className={clsx(
         "relative h-screen flex flex-col justify-between overflow-hidden transition-all duration-300 ease-in-out select-none",
         collapsed ? "w-20" : "w-64"
@@ -104,12 +105,14 @@ export default function Sidebar() {
                     href={item.path}
                     className={clsx(
                       "flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all",
+                     
                       isActive
                         ? "bg-white/20 text-white shadow-md"
                         : "text-gray-300 hover:bg-white/10 hover:text-white"
                     )}
                   >
                     <item.icon className="w-5 h-5" />
+                    
                     {!collapsed && <span>{item.label}</span>}
                   </Link>
 
@@ -123,14 +126,13 @@ export default function Sidebar() {
             })}
           </nav>
         </div>
-
-        {/* Bottom Section: Profile */}
+       {/* Bottom Section: Profile */}
         <Link href="/profile-settings">
           <div className="p-4 flex items-center gap-3 mt-auto cursor-pointer group hover:bg-white/10 transition rounded-lg">
             <div className="relative shrink-0">
               <div className="p-[2px] rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-indigo-500">
                 <Image
-                  src="/User_profil.png"
+                  src={user?.avatar_url || "/avatar.png"}
                   alt="User"
                   width={40}
                   height={40}
