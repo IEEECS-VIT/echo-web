@@ -69,6 +69,7 @@ export default forwardRef(function ChatWindow(
   const [loadingMore, setLoadingMore] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const validUsernamesRef = useRef<Set<string>>(new Set());
   const [offset, setOffset] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -201,6 +202,30 @@ const isMessageMentioningMe = useCallback(
 const hasMentionInHistoryRef = useRef(false);
 const hasScrolledToMentionRef = useRef(false);
 const userHasScrolledRef = useRef(false);
+const isValidUsernameMention = (mention: string) => {
+  const name = mention.replace("@", "").toLowerCase();
+
+  if (name === "everyone" || name === "here") return true;
+
+  return validUsernamesRef.current.has(name);
+};
+
+useEffect(() => {
+  const set = new Set<string>();
+
+  messages.forEach((m) => {
+    if (m.username && m.username !== "You") {
+      set.add(m.username.toLowerCase());
+    }
+  });
+
+  if (currentUsername) {
+    set.add(currentUsername.toLowerCase());
+  }
+
+  validUsernamesRef.current = set;
+}, [messages, currentUsername]);
+
 useEffect(() => {
   const mentionExists = messages.some(
     (m) => m.senderId !== currentUserId && isMessageMentioningMe(m.content)
@@ -841,6 +866,23 @@ userHasScrolledRef.current = false;
       socket.off("reconnect");
     };
   }, [socket, currentUserId, loadMessages, channelId, currentUserAvatar]);
+const validateUserMentions = (message: string) => {
+  const userMentionRegex = /@([a-zA-Z0-9_]+)/g;
+  let match;
+
+  while ((match = userMentionRegex.exec(message)) !== null) {
+    const mention = `@${match[1]}`;
+
+    // Skip role mentions (@&role)
+    if (message.includes(`@&${match[1]}`)) continue;
+
+    if (!isValidUsernameMention(mention)) {
+      return { valid: false, invalidUser: mention };
+    }
+  }
+
+  return { valid: true };
+};
 
   const validateRoleMentions = (message: string) => {
     const roleMentionRegex = /@&([a-zA-Z0-9_ ]+?)(?=\s|$)/g;
@@ -863,6 +905,11 @@ userHasScrolledRef.current = false;
       setIsSending(false);
       return;
     }
+    const userValidation = validateUserMentions(text);
+
+if (!userValidation.valid) {
+
+}
 
     setIsSending(true);
   // Get avatar from cache or use fallback
@@ -1002,6 +1049,7 @@ userHasScrolledRef.current = false;
                       currentUserId={currentUserId}
                       currentUsername={currentUsername}
                       serverRoles={serverRoles}
+                      isValidUsernameMention={isValidUsernameMention}
                       currentUserRoleIds={currentUserRoleIds}
                       onMentionClick={handleUsernameClick}
                       onRoleMentionClick={handleRoleMentionClick}
