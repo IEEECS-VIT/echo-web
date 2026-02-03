@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getServerInvites, createServerInvite, deleteInvite, testDirectPost } from "@/api";
+import { getServerInvites, createServerInvite, deleteInvite } from "@/api";
 import { ServerInvite } from "@/api/types/server.types";
 
 interface InvitePeopleProps {
@@ -44,16 +44,6 @@ export default function InvitePeople({ serverId }: InvitePeopleProps) {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const testBackendConnection = async () => {
-    try {
-      const response = await testDirectPost();
-      alert(`Backend test successful: ${JSON.stringify(response)}`);
-    } catch (err: any) {
-      console.error('Backend test failed:', err);
-      alert(`Backend test failed: ${err.message}`);
     }
   };
 
@@ -247,14 +237,7 @@ export default function InvitePeople({ serverId }: InvitePeopleProps) {
           </div>
         </div>
       </div>
-      <div className="flex justify-end gap-4">
-        <button
-          className="bg-red-600 text-white font-bold rounded px-6 py-2 shadow transition-all duration-200
-            hover:bg-red-700 hover:-translate-y-1 hover:scale-105 focus:outline-none"
-          onClick={testBackendConnection}
-        >
-          Test Backend
-        </button>
+      <div className="flex justify-end">
         <button
           className="bg-gradient-to-r from-[#ffb347] to-[#ffcc33] text-[#23272a] font-bold rounded px-6 py-2 shadow transition-all duration-200
             hover:from-[#ffcc33] hover:to-[#ffb347] hover:-translate-y-1 hover:scale-105 focus:outline-none"
