@@ -69,8 +69,8 @@ export default function InvitePeople({ serverId }: InvitePeopleProps) {
         maxUses: maxUsesStr
       });
       
-      
-      const newLink = response.invite.inviteLink;
+      const inviteId = response.invite?.id;
+      const newLink = inviteId ? `${window.location.origin}/invite/${inviteId}` : "";
       setInviteLink(newLink);
       setSuccess("New invite link generated successfully");
       loadInvites(); // Refresh the invites list
@@ -85,7 +85,7 @@ export default function InvitePeople({ serverId }: InvitePeopleProps) {
   const handleDeleteInvite = async (inviteId: string) => {
     if (confirm("Are you sure you want to delete this invite?")) {
       try {
-        await deleteInvite(inviteId);
+        await deleteInvite(serverId, inviteId);
         setSuccess("Invite deleted successfully");
         loadInvites(); // Refresh the invites list
         

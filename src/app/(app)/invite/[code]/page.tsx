@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { joinServer } from "@/api";
 import Loader from "@/components/Loader";
@@ -11,6 +11,9 @@ export default function InvitePage() {
   const { code } = useParams<{ code: string }>();
   const router = useRouter();
 
+  // Prevent duplicate joins from React strict mode / re-renders.
+  const joinAttemptRef = useRef<string | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [errorCode, setErrorCode] = useState("");
@@ -18,13 +21,18 @@ export default function InvitePage() {
     message: string;
     type: "info" | "success" | "error";
   } | null>(null);
-useEffect(() => {
+  useEffect(() => {
   if (!code) {
     setToast({ message: "Invalid invite link.", type: "error" });
     setError("Invalid invite link.");
     setLoading(false);
     return;
   }
+
+  if (joinAttemptRef.current === code) {
+    return;
+  }
+  joinAttemptRef.current = code;
 
   const join = async () => {
     try {
@@ -53,28 +61,6 @@ useEffect(() => {
 
   join();
 }, [code, router]);
-
-
-  useEffect(() => {
-    if (!code) {
-      setError("Invalid invite link.");
-      setLoading(false);
-      return;
-    }
-
-    const join = async () => {
-      try {
-        await joinServer(code);
-        router.replace("/servers");
-      } catch (err: any) {
-        setError(err?.message || "Failed to join the server.");
-        setErrorCode(err?.code || "");
-        setLoading(false);
-      }
-    };
-
-    join();
-  }, [code, router]);
 
   return (
     <>
