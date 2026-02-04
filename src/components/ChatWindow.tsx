@@ -45,6 +45,9 @@ interface Message {
     author: string;
     avatarUrl?: string;
   } | null;
+  // Optimistic UI fields
+  status?: 'pending' | 'sent' | 'failed';
+  tempId?: string;
 }
 
 interface ChatWindowProps {
@@ -231,22 +234,66 @@ const isValidUsernameMention = (mention: string) => {
 
   return validUsernamesRef.current.has(name);
 };
-
 useEffect(() => {
-  const set = new Set<string>();
+  if (!serverId) return;
 
-  messages.forEach((m) => {
-    if (m.username && m.username !== "You") {
-      set.add(m.username.toLowerCase());
+  let cancelled = false;
+
+  const seedMentionableUsernames = async () => {
+    try {
+      // 🔹 use same endpoint as @ popup
+      const res = await apiClient.get(
+        `/api/mentions/search/${serverId}`,
+        { params: { q: "" } } // empty query = backend decides
+      );
+
+      const set = new Set<string>();
+
+      for (const user of res.data?.users ?? []) {
+        if (!user?.username) continue;
+
+        const normalized = user.username
+          .trim()
+          .toLowerCase()
+          .replace(/[^\w-]/g, "");
+
+        if (normalized) {
+          set.add(normalized);
+        }
+      }
+
+      // Always include self
+      if (currentUsername) {
+        set.add(
+          currentUsername
+            .trim()
+            .toLowerCase()
+            .replace(/[^\w-]/g, "")
+        );
+      }
+
+      if (!cancelled) {
+        validUsernamesRef.current = set;
+
+        console.log(
+          "VALID USERNAMES (from mentions search):",
+          Array.from(set)
+        );
+      }
+    } catch (err) {
+      console.error("Failed to seed mention usernames", err);
     }
-  });
+  };
 
-  if (currentUsername) {
-    set.add(currentUsername.toLowerCase());
-  }
+  seedMentionableUsernames();
 
-  validUsernamesRef.current = set;
-}, [messages, currentUsername]);
+  return () => {
+    cancelled = true;
+  };
+}, [serverId, currentUsername]);
+
+
+
 
 useEffect(() => {
   const mentionExists = messages.some(
@@ -993,7 +1040,8 @@ userHasScrolledRef.current = false;
         avatarUrl,
         username: resolvedUsername,
         mediaUrl: saved?.media_url || saved?.mediaUrl,
-        replyTo // <-- add this
+        replyTo,
+        status: 'sent' // Messages from others are always 'sent'
       };
 
       if (senderId && resolvedUsername && resolvedUsername !== 'Unknown') {
@@ -1031,13 +1079,77 @@ userHasScrolledRef.current = false;
       }, 10 * 60 * 1000);
     };
 
+    // Handle message confirmation (for sender's optimistic UI)
+    const handleMessageConfirmed = async (saved: any) => {
+      const tempId = saved?.tempId;
+      const realId = saved?.id;
+      
+      if (!tempId || !realId) {
+        console.warn("message_confirmed missing tempId or id:", saved);
+        return;
+      }
+
+      const senderId = saved?.sender_id || saved?.senderId || currentUserId;
+      const avatarUrl = await getAvatarUrl(senderId);
+
+      // Replace optimistic message with confirmed message
+      setMessages(prev => {
+        const optimisticIndex = prev.findIndex(msg => msg.tempId === tempId);
+        
+        if (optimisticIndex === -1) {
+          console.log(`No optimistic message found for tempId ${tempId}`);
+          return prev;
+        }
+
+        const confirmedMessage: Message = {
+          id: realId,
+          content: saved?.content || prev[optimisticIndex].content,
+          senderId,
+          timestamp: saved?.timestamp || new Date().toISOString(),
+          avatarUrl,
+          username: 'You',
+          mediaUrl: saved?.media_url || saved?.mediaUrl,
+          replyTo: prev[optimisticIndex].replyTo,
+          status: 'sent'
+        };
+
+        const updated = [...prev];
+        updated[optimisticIndex] = confirmedMessage;
+        return updated;
+      });
+
+      // Mark as received to prevent duplicate from socket
+      receivedMessageIdsRef.current.add(realId);
+    };
+
+    // Handle message error (for sender's optimistic UI)
+    const handleMessageError = (error: any) => {
+      const tempId = error?.tempId;
+      const errorMsg = error?.error || error;
+      
+      console.error('Message error:', errorMsg);
+      
+      if (tempId) {
+        // Mark the optimistic message as failed
+        setMessages(prev => prev.map(msg => 
+          msg.tempId === tempId 
+            ? { ...msg, status: 'failed' as const }
+            : msg
+        ));
+      }
+    };
+
     socket.on("new_message", handleIncomingMessage);
+    socket.on("message_confirmed", handleMessageConfirmed);
+    socket.on("message_error", handleMessageError);
     socket.on('reconnect', async () => {
       await loadMessages();
     });
 
     return () => {
       socket.off("new_message");
+      socket.off("message_confirmed");
+      socket.off("message_error");
       socket.off("reconnect");
     };
   }, [socket, currentUserId, loadMessages, currentUserAvatar]);
@@ -1109,11 +1221,10 @@ if (!userValidation.valid) {
   
   const optimisticMessage: Message = {
     id: tempId,
-    content: file ? `${text} 📎 Uploading ${file.name}...` : text,
+    content: file ? `${text} [Uploading ${file.name}...]` : text,
     senderId: currentUserId,
     timestamp: new Date().toISOString(),
     avatarUrl: userAvatar?.url || "/User_profil.png",
-
     username: "You",
     replyTo: replyingTo
       ? {
@@ -1123,9 +1234,11 @@ if (!userValidation.valid) {
           avatarUrl: replyingTo.avatarUrl || "/User_profil.png",
         }
       : null,
+    status: 'pending',
+    tempId: tempId,
   };
   
-  // Add optimistic message only if it doesn't already exist
+  // Add optimistic message immediately
   setMessages(prev => {
     const hasSimilarRecent = prev.some(msg => 
       msg.senderId === currentUserId &&
@@ -1141,34 +1254,78 @@ if (!userValidation.valid) {
     return [...prev, optimisticMessage];
   });
 
+  // Clear reply state immediately for better UX
+  const currentReplyTo = replyingTo;
+  setReplyingTo(null);
+
   try {
-    const response = await uploadMessage({
-      content: text.trim(),
-      channel_id: channelId,
-      sender_id: currentUserId,
-      reply_to: replyingTo?.id,
-      file: file || undefined,
-    });
-    setReplyingTo(null);
-    console.log('[Upload Message] Response:', response);
-    
-    // Remove optimistic message after successful send
-    // (the real message will come via socket)
-    setMessages(prev => prev.filter((msg) => msg.id !== tempId));
+    if (file) {
+      // File uploads still need HTTP API
+      const response = await uploadMessage({
+        content: text.trim(),
+        channel_id: channelId,
+        sender_id: currentUserId,
+        reply_to: currentReplyTo?.id,
+        file: file,
+      });
+      console.log('[Upload Message] Response:', response);
+      
+      // For file uploads, update the optimistic message with real data
+      const responseId = response?.id;
+      if (responseId) {
+        setMessages(prev => prev.map(msg => 
+          msg.tempId === tempId
+            ? { ...msg, id: responseId, status: 'sent' as const, content: text, mediaUrl: response.media_url }
+            : msg
+        ));
+        receivedMessageIdsRef.current.add(responseId);
+      }
+    } else {
+      // Text-only messages use socket for faster delivery
+      if (socket && socket.connected) {
+        socket.emit('send_message', {
+          channelId: channelId,
+          senderId: currentUserId,
+          content: text.trim(),
+          tempId: tempId,
+        });
+        // Socket handlers will update the optimistic message
+      } else {
+        // Fallback to HTTP if socket not connected
+        const response = await uploadMessage({
+          content: text.trim(),
+          channel_id: channelId,
+          sender_id: currentUserId,
+          reply_to: currentReplyTo?.id,
+        });
+        
+        const fallbackResponseId = response?.id;
+        if (fallbackResponseId) {
+          setMessages(prev => prev.map(msg => 
+            msg.tempId === tempId
+              ? { ...msg, id: fallbackResponseId, status: 'sent' as const }
+              : msg
+          ));
+          receivedMessageIdsRef.current.add(fallbackResponseId);
+        }
+      }
+    }
   } catch (err: any) {
-    console.error('💔 Failed to upload message:', err);
+    console.error('Failed to send message:', err);
     const errorMessage = err?.response?.data?.error || err.message || 'Unknown error';
+    
+    // Mark optimistic message as failed
+    setMessages(prev => prev.map(msg => 
+      msg.tempId === tempId
+        ? { ...msg, status: 'failed' as const }
+        : msg
+    ));
     
     // Check if it's a permission error
     if (err?.response?.status === 403) {
       setPermissionError(errorMessage);
       setTimeout(() => setPermissionError(null), 5000);
-    } else {
-      alert(`Upload failed: ${errorMessage}`);
     }
-    
-    // Remove optimistic message on error
-    setMessages(prev => prev.filter((msg) => msg.id !== tempId));
   } finally {
     setIsSending(false);
   }
@@ -1253,8 +1410,10 @@ if (!userValidation.valid) {
                 <MessageBubble
                   name={msg.username}
                   message={{
+                    id: msg.id,
                     content: msg.content,
                     replyTo: msg.replyTo || null,
+                    status: msg.status,
                   }}
                   avatarUrl={msg.avatarUrl}
                   isSender={msg.senderId === currentUserId}
@@ -1263,6 +1422,12 @@ if (!userValidation.valid) {
                     minute: "2-digit",
                   })}
                   onReply={() => handleReply(msg)}
+                  onRetry={msg.status === 'failed' ? () => {
+                    // Remove failed message and resend
+                    const failedContent = msg.content;
+                    setMessages(prev => prev.filter(m => m.id !== msg.id));
+                    handleSend(failedContent, null);
+                  } : undefined}
                   onProfileClick={() => openProfile(msg)}
                   messageRenderer={(content: string) => (
                     <MessageContentWithMentions
