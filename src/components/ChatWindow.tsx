@@ -188,13 +188,13 @@ export default forwardRef(function ChatWindow(
     [messages]
   );
 
-  const reactionMode = threadId && !serverId ? "dm" : "channel";
+  // const reactionMode = threadId && !serverId ? "dm" : "channel";
 
-  const { getReactionsForMessage, toggleReaction } = useMessageReactions({
-    mode: reactionMode,
-    currentUserId,
-    messageIds,
-  });
+  //const { getReactionsForMessage, toggleReaction } = useMessageReactions({
+  //  mode: reactionMode,
+  //  currentUserId,
+   // messageIds,
+  //});
 
   // const {
   //   pins,
@@ -1729,19 +1729,16 @@ const isReplyImage = (mediaUrl?: string | null, mediaType?: string) => {
 
   const handleSearch = useCallback(
     async (query: string) => {
-      if (reactionMode === "dm" && threadId) {
-        return searchDmMessages(threadId, query);
-      }
       if (!serverId) return [];
       return searchServerMessages(serverId, query);
     },
-    [reactionMode, threadId, serverId]
+    [threadId, serverId]
   );
 
   const handleSearchSelect = useCallback(
     async (result: MessageSearchResult) => {
       if (
-        reactionMode === "channel" &&
+      
         result.channel_id &&
         result.channel_id !== channelId
       ) {
@@ -1762,7 +1759,7 @@ const isReplyImage = (mediaUrl?: string | null, mediaType?: string) => {
         });
       }
     },
-    [reactionMode, channelId, scrollToMention]
+    [ channelId, scrollToMention]
   );
 
   // const handleJumpToPinned = useCallback(
@@ -1883,15 +1880,7 @@ const isReplyImage = (mediaUrl?: string | null, mediaType?: string) => {
         onClose={() => setShowSearch(false)}
         onSearch={handleSearch}
         onSelectResult={handleSearchSelect}
-        placeholder={
-          reactionMode === "dm"
-            ? "Search in this conversation..."
-            : "Search messages in this server..."
-        }
-        title={
-          reactionMode === "dm" ? "Search Conversation" : "Search Server Messages"
-        }
-        showChannelName={reactionMode === "channel"}
+        
       />
 
       {toast && (
@@ -2006,10 +1995,7 @@ const isReplyImage = (mediaUrl?: string | null, mediaType?: string) => {
                         replyTo: msg.replyTo || null,
                         status: msg.status,
                       }}
-                      reactions={getReactionsForMessage(msg.id)}
-                      onReact={(emoji) => {
-                        void toggleReaction(msg.id, emoji, currentUserId);
-                      }}
+                      
                       showPinAction={!!msg.id && !String(msg.id).startsWith("temp-")}
                       // isPinned={isPinned(msg.id)}
                       // onPin={() => {
