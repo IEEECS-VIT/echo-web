@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Trash2, User } from "lucide-react";
+import { User } from "lucide-react";
 
 interface NavItem {
   id: string;
@@ -29,24 +29,24 @@ const NAV_GROUPS: NavGroup[] = [
       },
     ],
   },
-  {
-    label: "Account",
-    items: [
-      // {
-      //   id: "change-password",
-      //   label: "Change Password",
-      //   href: "/change-password",
-      //   icon: <Lock className="h-4 w-4 flex-shrink-0" />,
-      // },
-      {
-        id: "delete-account",
-        label: "Delete Account",
-        href: "/delete-account",
-        icon: <Trash2 className="h-4 w-4 flex-shrink-0" />,
-        danger: true,
-      },
-    ],
-  },
+  // {
+  //   label: "Account",
+  //   items: [
+  //     {
+  //       id: "change-password",
+  //       label: "Change Password",
+  //       href: "/change-password",
+  //       icon: <Lock className="h-4 w-4 flex-shrink-0" />,
+  //     },
+  //     {
+  //       id: "delete-account",
+  //       label: "Delete Account",
+  //       href: "/delete-account",
+  //       icon: <Trash2 className="h-4 w-4 flex-shrink-0" />,
+  //       danger: true,
+  //     },
+  //   ],
+  // },
 ];
 
 export default function SettingsSidebar() {
