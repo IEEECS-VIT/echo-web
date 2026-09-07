@@ -8,7 +8,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useAppRouter } from "@/lib/navigation/useAppRouter";
 import { usePageReady } from "@/components/RouteChangeLoader";
 import {
   Paperclip,
@@ -26,6 +27,7 @@ import InlineSearchDropdown from "./InlineSearchDropdown";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getUserDMs,
+  getDmThreadIdForPartner,
   uploaddm,
   markThreadAsRead,
   searchDmMessages,
@@ -42,6 +44,7 @@ import {
   notifyModerationBlocked,
 } from "@/lib/moderation";
 import UserProfileModal from "./UserProfileModal";
+import { getErrorMessage } from "@/components/toast/errorNormalizer";
 import { ScrollToBottomButton } from "@/components/ScrollToBottomButton";
 import { useChatScroll } from "@/hooks/useChatScroll";
 import { MessageSearchResult } from "@/api/types/message.types";
@@ -325,6 +328,9 @@ interface ChatWindowProps {
     files: File[],
     replyTo?: DMReplyTarget
   ) => void;
+  isSending?: boolean;
+  onRetryMessage?: (message: DirectMessage) => void;
+  onDiscardMessage?: (message: DirectMessage) => void;
   onFileError: (msg: string) => void;
   onOpenProfile: (
     userId: string,
@@ -347,6 +353,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   threadId,
   allUsers,
   onSendMessage,
+  isSending = false,
+  onRetryMessage,
+  onDiscardMessage,
   onOpenProfile,
   canMessage = true,
   friendBlockedName,
@@ -655,6 +664,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                           onReplyPreviewClick={(id) =>
                             void scroll.scrollToMessage(id)
                           }
+                          onRetry={
+                            onRetryMessage
+                              ? () => onRetryMessage(msg)
+                              : undefined
+                          }
+                          onDiscard={
+                            onDiscardMessage
+                              ? () => onDiscardMessage(msg)
+                              : undefined
+                          }
                           timestamp={msg.timeLabel}
                           name={
                             !group.isSender && index === 0
@@ -768,7 +787,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         {canMessage ? (
           <MessageInputWithMentions
             sendMessage={handleSendMessage}
-            isSending={false}
+            isSending={isSending}
             serverRoles={[]}
             onTyping={() => {}}
             placeholder={`Message ${recipientFirstName}`}
@@ -782,7 +801,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 };
 
 function MessagesPageContentInner() {
-  const router = useRouter();
+  const { open, openDm } = useAppRouter();
   const searchParams = useSearchParams();
   const selectedDM = searchParams.get("dm");
   const { refreshCount: refreshMessageNotifications, unreadPerThread } =
@@ -796,6 +815,8 @@ function MessagesPageContentInner() {
   const [dmSummaries, setDmSummaries] = useState<Map<string, DmSummary>>(
     new Map()
   );
+  const [isDmSending, setIsDmSending] = useState(false);
+  const isDmSendingRef = useRef(false);
   const dmSummariesRef = useRef<Map<string, DmSummary>>(new Map());
   useEffect(() => {
     dmSummariesRef.current = dmSummaries;
@@ -897,6 +918,35 @@ function MessagesPageContentInner() {
   const activeThreadId = activeDmId
     ? (threadIds.get(activeDmId) ?? null)
     : null;
+
+  const resolvedDmThreadRef = useRef<Map<string, string | null>>(new Map());
+  const resolvingDmThreadRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!activeDmId || !currentUser?.id) return;
+    if (threadIds.has(activeDmId)) return;
+    if (resolvedDmThreadRef.current.has(activeDmId)) return;
+    if (resolvingDmThreadRef.current.has(activeDmId)) return;
+
+    resolvingDmThreadRef.current.add(activeDmId);
+    getDmThreadIdForPartner(activeDmId)
+      .then((threadId) => {
+        resolvedDmThreadRef.current.set(activeDmId, threadId);
+        if (threadId) {
+          setThreadIds((prev) => {
+            if (prev.has(activeDmId)) return prev;
+            const next = new Map(prev);
+            next.set(activeDmId, threadId);
+            return next;
+          });
+        }
+      })
+      .catch(() => {
+        resolvedDmThreadRef.current.set(activeDmId, null);
+      })
+      .finally(() => {
+        resolvingDmThreadRef.current.delete(activeDmId);
+      });
+  }, [activeDmId, currentUser?.id, threadIds, setThreadIds]);
 
   const {
     data: dmMessagesData,
@@ -1078,9 +1128,9 @@ function MessagesPageContentInner() {
       const loggedInUser = JSON.parse(userItem);
       setCurrentUser(loggedInUser);
     } else {
-      router.push("/");
+      open("HOME");
     }
-  }, [router]);
+  }, [open]);
   useEffect(() => {
     const handleProfileUpdate = () => {
       const userItem = localStorage.getItem("user");
@@ -1634,11 +1684,9 @@ queryClient.setQueryData(
         unreadCount: 0,
         status: "failed",
       });
-      (context?.uploads ?? vars.uploads).forEach((upload) => {
-        if (upload.blobUrl) URL.revokeObjectURL(upload.blobUrl);
-      });
-      // The optimistic bubbles are already marked failed inline ("Not
-      // delivered"), so no toast is needed here to avoid duplicate feedback.
+      toast.error(
+        getErrorMessage(error, "Message couldn't be sent. Please try again.")
+      );
     },
   });
 
@@ -1650,6 +1698,8 @@ queryClient.setQueryData(
     if (!currentUser || !activeDmId) return;
     if (!content.trim() && files.length === 0) return;
 
+    if (isDmSendingRef.current) return;
+
     if (friendMessagingBlocked) {
       toast.warning(NOT_FRIEND_MESSAGE, { title: NOT_FRIEND_TITLE });
       return;
@@ -1660,19 +1710,96 @@ queryClient.setQueryData(
       return;
     }
 
-    sendDmMutation.mutate({
-      conversationId: activeDmId,
-      senderId: currentUser.id,
-      uploads: buildDmUploads(content, files, replyTo),
-    });
+    isDmSendingRef.current = true;
+    setIsDmSending(true);
+    sendDmMutation.mutate(
+      {
+        conversationId: activeDmId,
+        senderId: currentUser.id,
+        uploads: buildDmUploads(content, files, replyTo),
+      },
+      {
+        onSettled: () => {
+          isDmSendingRef.current = false;
+          setIsDmSending(false);
+        },
+      }
+    );
   };
+
+  const retryFailedDm = useCallback(
+    async (message: DirectMessage) => {
+      if (!currentUser || !activeDmId) return;
+      if (message.status !== "failed") return;
+
+      const key = queryKeys.dmMessages(activeDmId);
+      queryClient.setQueryData(
+        key,
+        (old: DmMessagesData | undefined) =>
+          old ? removeMessagesById(old, new Set([String(message.id)])) : old
+      );
+
+      let files: File[] = [];
+      if (message.media_url?.startsWith("blob:")) {
+        try {
+          const res = await fetch(message.media_url);
+          const blob = await res.blob();
+          const ext = message.media_type?.split("/")?.[1] ?? "";
+          files = [
+            new File([blob], ext ? `attachment.${ext}` : "attachment", {
+              type: blob.type || message.media_type || "application/octet-stream",
+            }),
+          ];
+        } catch {
+          files = [];
+        }
+      }
+
+      sendDmMutation.mutate(
+        {
+          conversationId: activeDmId,
+          senderId: currentUser.id,
+          uploads: buildDmUploads(
+            message.content,
+            files,
+            message.replyTo ?? undefined
+          ),
+        },
+        {
+          onSettled: () => {
+            isDmSendingRef.current = false;
+            setIsDmSending(false);
+          },
+        }
+      );
+    },
+    [activeDmId, currentUser, queryClient, sendDmMutation]
+  );
+
+  const discardFailedDm = useCallback(
+    (message: DirectMessage) => {
+      if (!activeDmId) return;
+      if (message.status !== "failed") return;
+
+      const key = queryKeys.dmMessages(activeDmId);
+      queryClient.setQueryData(
+        key,
+        (old: DmMessagesData | undefined) =>
+          old ? removeMessagesById(old, new Set([String(message.id)])) : old
+      );
+      if (message.media_url?.startsWith("blob:")) {
+        URL.revokeObjectURL(message.media_url);
+      }
+    },
+    [activeDmId, queryClient]
+  );
 
   const handleSelectDm = useCallback(
     (userId: string) => {
       setActiveDmId(userId);
-      router.push(`/messages?dm=${userId}`);
+      openDm(userId);
     },
-    [router]
+    [openDm]
   );
 
   const openUserProfile = useCallback(
@@ -1838,6 +1965,9 @@ queryClient.setQueryData(
             threadId={activeThreadId}
             allUsers={allUsers}
             onSendMessage={handleSendMessage}
+            isSending={isDmSending}
+            onRetryMessage={retryFailedDm}
+            onDiscardMessage={discardFailedDm}
             onFileError={(msg) => toast.error(msg)}
             onOpenProfile={openUserProfile}
             canMessage={!friendMessagingBlocked}
